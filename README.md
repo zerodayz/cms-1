@@ -1,5 +1,7 @@
 # CMS 1
 
+![CMS1](static/images/screenshot_march.png)
+
 CMS 1 is a CMS written in Rust. It is a work in progress.
 
 It is a hobby project to learn Rust and to create a CMS that is easy to use and easy to deploy.
