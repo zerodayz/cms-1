@@ -1,0 +1,25 @@
+{% extends 'base' %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">Create a New Space</h1>
+</div>
+<form action="new" id="space-form" method="POST">
+  <div class="w3-padding-16">
+    <label for="long_name">Space Name:</label>
+    <input type="text" id="long_name" aria-label="Enter Space name. This is how your Space will be named." name="long_name" required/>
+    <small>This is how your Space will be named.</small>
+  </div>
+    <div class="w3-padding-16" >
+      <label for="is_public">Public Space:</label>
+      <input type="checkbox" id="is_public" aria-label="Public Space checkbox. Check this box if you want your Space to be public." name="is_public">
+        <small>Check this box if you want your Space to be public.</small>
+      </label>
+    </div>
+  <div>
+    <button type="submit" class="w3-button">Create Space</button>
+  </div>
+</form>
+{% endblock %}

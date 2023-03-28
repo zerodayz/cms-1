@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang=en>
+{% block head %}
+<title>{% block title %}{% endblock %}</title>
+{% block css %}
+<link rel="stylesheet" href="/public/css/w3.css">
+<link rel="stylesheet" href="/public/css/ckeditor-custom.css">
+<link rel="stylesheet" href="/public/css/fonts.css">
+<link rel="stylesheet" href="/public/css/variables.css">
+<link rel="stylesheet" href="/public/css/global.css">
+
+<link rel="stylesheet" href="/public/css/menu.css">
+<link rel="stylesheet" href="/public/css/switch.css">
+<!--To be able to access ARIA-->
+<script src="/public/js/table.js"></script>
+<script src="/public/js/menu.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/public/js/ckeditor5-36/build/ckeditor.js"></script>
+
+{% endblock css %}
+{% block extend_head %}{% endblock extend_head %}
+{% endblock head %}
+<body>
+{% include "_partials/header" %}
+<main aria-label="CMS">
+    <div class="w3-main" id="main">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+<!-- END GRID -->
+</div>
+<div id="arrow-keys-indicator" class="hidden"></div>
+<!-- END w3-content -->
+</div>
+{% block scripts %}
+{% endblock scripts %}
+</body>
+</html>

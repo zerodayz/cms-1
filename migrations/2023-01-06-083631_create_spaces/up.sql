@@ -1,0 +1,8 @@
+CREATE TABLE spaces (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    long_name VARCHAR(255) NOT NULL UNIQUE,
+    owner_id INT NOT NULL,
+    is_public BOOLEAN NOT NULL,
+    PRIMARY KEY (id)
+)

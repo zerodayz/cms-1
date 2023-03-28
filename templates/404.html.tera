@@ -1,0 +1,14 @@
+{% extends 'base' %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="heading w3-padding">
+    <h1 tabindex="0" id="page-title">{{ page.title }}</h1>
+</div>
+<div class="w3-padding">
+    <p>
+        {{ error.message }}
+    </p>
+</div>
+{% endblock %}

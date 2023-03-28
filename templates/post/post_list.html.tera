@@ -1,0 +1,38 @@
+{% extends 'base' %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">{{ page.title }}</h1>
+</div>
+<div class="table-wrap">
+    <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data w3-table-all">
+      <tbody class="table-navigation"><tr>
+        <th class="w3-left" tabindex="-1">Post Title</th>
+        <th aria-sort="ascending">
+          <span tabindex="-1" role="button">Published Date</span>
+        </th>
+        <th tabindex="-1">Actions</th>
+      </tr>
+      {% for post in posts %}
+      <tr>
+        <td tabindex="-1">{{ post.title }}</td>
+        <td tabindex="-1">{{ post.updated_at | date_ago }}</td>
+        <td>
+          <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu{{ post.id }}">Actions</button>
+          <ul role="menu" id="menu{{ post.id }}">
+              <li role="menuitem"><a href="/post/{{ post.uri }}" class="w3-button w3-table-button">View Post</a></li>
+              <li role="menuitem"><a href="/post-delete/{{ post.id }}" class="w3-button w3-table-button">Delete Post</a></li>
+          </ul>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extend_head %}
+<link rel="stylesheet" href="/public/css/table.css">
+{% endblock extend_head %}

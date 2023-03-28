@@ -1,0 +1,44 @@
+[package]
+name = "cms"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+time = "0.3.17"
+# user management
+rand = "0.8.5"
+bcrypt = "0.13.0"
+# database
+mysql = "23.0.1"
+chrono = { version = "0.4.23", features = ["serde"] }
+# slugify posts
+slug = {version = "0.1.4"}
+# For the diesel_cli
+#  cargo install diesel_cli
+# Dependencies
+#  brew install postgresql
+#  brew install mysql-client
+#  brew install mysql
+diesel = { version = "2.0.2", features = ["mysql", "chrono"] }
+# config
+toml = "0.5.10"
+lazy_static = "1.4.0"
+serde = { version = "1.0", features = ["derive"] }
+# error handling
+thiserror = "1.0"
+# webserver
+
+[dependencies.rocket]
+version = "0.5.0-rc.2"
+features = ["json", "secrets"]
+
+[dependencies.rocket_dyn_templates]
+version = "0.1.0-rc.2"
+features = ["tera", "handlebars"]
+
+
+[[bin]]
+name = "list_users"
+path = "src/bin/list_users.rs"

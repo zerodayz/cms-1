@@ -1,0 +1,87 @@
+/* Palette */
+/* Monochromatic */
+/*
+ #f5f5f5, #000000
+ #e8e8e8, #000000
+ #acaeb7, #000000
+ #282d40, #ffffff
+ #202331, #ffffff
+ #181a23, #ffffff
+ */
+
+:root {
+    /* General */
+    --cms-bg-color: #f5f5f5;
+    --cms-text-color: #000000;
+    --cms-focus-color: #282d40;
+    --cms-error-text-color: #ff0000;
+    --cms-border-color: rgba(0,0,0,0.1);
+
+    /* Menu bar */
+    --cms-menu-bg-color: #282d40;
+    --cms-menu-fg-color: #ffffff;
+    --cms-menu-focus-color: #ffffff;
+
+    /* Login */
+    --cms-login-focus-color: #ffffff;
+
+    /* Popup menu */
+    --cms-popup-bg-color: #eaf9ef;
+
+    /* Page */
+    --cms-page-heading-bg-color: #e8e8e8;
+
+    /* Editor */
+    --cms-editor-bg-color: #eeeeee;
+    --cms-editor-fg-disabled-color: #666666;
+    --cms-editor-text-color: #282d40;
+    --cms-editor-focus-color: #282d40;
+
+    /* Switch */
+    --cms-switch-bg-color: #eaf9ef;
+}
+
+/* Dark Palette */
+/*
+ #070c08, #ffffff
+ #0e150f, #ffffff
+ #070c08, #ffffff
+ #452f30, #ffffff
+ #251b1b, #ffffff
+ */
+
+[data-theme="dark"] {
+    /* General */
+    --cms-bg-color: #070c08;
+    --cms-text-color: #ffffff;
+    --cms-focus-color: #070c08;
+    --cms-error-text-color: #ff0000;
+    --cms-border-color: rgba(255, 255, 255, 0.1);
+
+    /* Menu bar */
+    --cms-menu-bg-color: #070c08;
+    --cms-menu-fg-color: #ffffff;
+    --cms-menu-focus-color: #ffffff;
+
+    /* Login */
+    --cms-login-focus-color: #ffffff;
+
+    /* Popup menu */
+    --cms-popup-bg-color: #070c08;
+
+    /* Page */
+    --cms-page-heading-bg-color: #0e150f;
+
+    /* Editor */
+    --cms-editor-bg-color: #0e150f;
+    --cms-editor-fg-disabled-color: #666666;
+    --cms-editor-text-color: #ffffff;
+    --cms-editor-focus-color: #ffffff;
+
+    /* Switch */
+    --cms-switch-bg-color: #eaf9ef;
+}
+
+:focus {
+    outline: var(--cms-menu-bg-color) solid 2px;
+}
