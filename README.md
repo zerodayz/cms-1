@@ -19,7 +19,7 @@ export MYSQL_ROOT_PASSWORD=roottoor
 export MYSQL_DATABASE=cms
 export MYSQL_USER=cms
 export MYSQL_PASSWORD=cmspassword
-podman run --name cms-backend-db -p 3306:3307/tcp -e MYSQL_ROOT_PASSWORD -e MYSQL_DATABASE -e MYSQL_USER -e MYSQL_PASSWORD -d mariadb:latest
+podman run --name cms-backend-db -p 3307:3306/tcp -e MYSQL_ROOT_PASSWORD -e MYSQL_DATABASE -e MYSQL_USER -e MYSQL_PASSWORD -d mariadb:latest
 ```
 
 #### 2. Setup the DB with diesel within `cms` directory:
