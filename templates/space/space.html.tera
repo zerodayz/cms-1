@@ -1,11 +1,15 @@
 {% extends 'base' %}
 
-{% block title %}{{ page.title }}{% endblock %}
+{% block title %}{{ space.long_name }}{% endblock %}
 
 {% block content %}
 
 <div class="heading w3-padding">
-    <h1 tabindex="0" id="page-title">{{ page.title }}</h1>
+    {% if space.is_public %}
+    <h1 tabindex="0" aria-label="{{ space.long_name }} Space">{{ space.long_name }}</h1>
+    {% else %}
+    <h1 tabindex="0" aria-label="{{ space.long_name }} Private Space">🔒{{ space.long_name }}</h1>
+    {% endif %}
 </div>
 <div class="space">
     <nav aria-label="Posts">
