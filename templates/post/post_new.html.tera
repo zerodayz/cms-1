@@ -28,7 +28,6 @@
 
 {% block extend_head %}
 <link rel="stylesheet" href="/public/css/ckeditor-custom.css">
-<script src="/public/js/ckeditor5-36/build/ckeditor.js"></script>
 {% endblock extend_head %}
 
 {% block scripts %}
