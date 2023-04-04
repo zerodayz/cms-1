@@ -628,7 +628,6 @@ async fn view_space(
         add_cookies(&mut cookies, data);
 
         ctx.insert("logged_in_user", &logged_in_user);
-        ctx.insert("space", &space);
 
         if let Some(value) = get_flash_cookie(&cookies) {
             ctx.insert("flash", &value);
@@ -806,15 +805,48 @@ async fn create_post(
 
 async fn view_post(
     state: State<AppState>,
+    mut cookies: Cookies,
     Path(id): Path<i32>,
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let mut ctx = tera::Context::new();
+
     let post: posts::Model = QueryCore::find_post_by_id(&state.conn, id)
         .await
         .expect("could not find post")
         .unwrap_or_else(|| panic!("could not find post with id {id}"));
 
-    let mut ctx = tera::Context::new();
+    let space_id = post.space_id;
+    let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, post.space_id)
+        .await
+        .expect("could not find space")
+        .unwrap_or_else(|| panic!("could not find space with id {space_id}"));
+
+    if !space.is_public && space.owner_id != Some(logged_in_user.user_id) {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to view the page.".to_string(),
+            }),
+        };
+
+        add_cookies(&mut cookies, data);
+
+        ctx.insert("logged_in_user", &logged_in_user);
+
+        if let Some(value) = get_flash_cookie(&cookies) {
+            ctx.insert("flash", &value);
+        }
+
+        let body = state
+            .templates
+            .render("posts/view.html.tera", &ctx)
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+        return Ok(Html(body))
+    }
+
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("post", &post);
 

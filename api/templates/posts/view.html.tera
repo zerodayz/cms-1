@@ -1,15 +1,24 @@
 {% extends "layout.html.tera" %} {% block content %}
-<div class="heading w3-padding">
-    <h1 tabindex="0" id="page-title">{{ post.post_title }}</h1>
-</div>
-<div id="post">
-    <p class="time">Last updated {{ post.updated_at }} by {{ post.owner_id }}</p>
-    <div class="ck-content">
-        {{ post.post_content | safe }}
+{% if post %}
+    <div class="heading w3-padding">
+        <h1 tabindex="0" id="page-title">{{ post.post_title }}</h1>
     </div>
-</div>
-<br>
-
+    <div id="post">
+        <p class="time">Last updated {{ post.updated_at }} by {{ post.owner_id }}</p>
+        <div class="ck-content">
+            {{ post.post_content | safe }}
+        </div>
+    </div>
+    <br>
+{% else %}
+    <div class="heading w3-padding">
+        <h1 tabindex="0" id="page-title">Post not found</h1>
+    </div>
+    <div id="post">
+        <p class="time">The post you are looking for does not exist.</p>
+    </div>
+    <br>
+{% endif %}
 <div style="text-align:center;bottom:0;width:100%;">
     <p>With love <span style="color:#FF0089FF">&hearts;</span> from Robin Černín 2023</p>
 </div>

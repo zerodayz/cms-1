@@ -1,4 +1,5 @@
 {% extends "layout.html.tera" %} {% block content %}
+{% if space %}
 <div class="heading w3-padding">
   {% if space.is_public %}
   <h1 tabindex="0" aria-label="{{ space.space_name }}">{{ space.space_name }}</h1>
@@ -6,6 +7,11 @@
   <h1 tabindex="0" aria-label="Private Space {{ space.space_name }}">🔒{{ space.space_name }}</h1>
   {% endif %}
 </div>
+{% else %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">Space Not Found</h1>
+</div>
+{% endif %}
 <div class="space">
   <nav aria-label="Posts">
     <ul class="treeview-navigation" role="tree" aria-label="Posts">
