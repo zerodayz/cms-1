@@ -39,7 +39,9 @@ podman run --name cms-backend-db -p 3307:3306/tcp -e MYSQL_ROOT_PASSWORD -e MYSQ
 #### 2. Setup the DB:
 
 ```bash
-sea-orm-cli migrate up
+pushd migration
+cargo run
+popd
 ```
 
 ### Deploy CMS:
