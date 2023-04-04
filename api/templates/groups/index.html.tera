@@ -1,0 +1,66 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">Groups</h1>
+</div>
+<div class="table-wrap">
+  <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data w3-table-all">
+    <tbody class="table-navigation">
+    <tr>
+      <th class="w3-left" tabindex="-1">Group Name</th>
+      <th tabindex="-1">Owner ID</th>
+      <th aria-sort="ascending">
+        <span tabindex="-1" role="button">Created Date</span>
+      </th>
+      <th aria-sort="ascending">
+        <span tabindex="-1" role="button">Last Updated Date</span>
+      </th>
+      <th tabindex="-1">Actions</th>
+    </tr>
+    {% for group in groups %}
+    <tr>
+      <td class="w3-left" tabindex="-1">{{ group.group_name }}</td>
+      <td tabindex="-1">{{ group.owner_id }}</td>
+      <td tabindex="-1">{{ group.created_at }}</td>
+      <td tabindex="-1">{{ group.updated_at }}</td>
+      <td>
+        <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu{{ group.group_id }}">Actions</button>
+        <ul role="menu" id="menu{{ group.group_id }}">
+          <li role="menuitem"><a href="/groups/{{ group.group_id }}" class="w3-button w3-table-button">Edit Group</a></li>
+        </ul>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+      <td></td>
+      <td></td>
+      <td>
+        {% if page == 1 %} Previous {% else %}
+        <a href="/groups?page={{ page - 1 }}&groups_per_page={{ groups_per_page }}"
+        >Previous</a
+        >
+        {% endif %} | {% if page == num_pages %} Next {% else %}
+        <a href="/groups?page={{ page + 1 }}&groups_per_page={{ groups_per_page }}"
+        >Next</a
+        >
+        {% endif %}
+      </td>
+      <td></td>
+      <td></td>
+    </tr>
+    </tfoot>
+  </table>
+</div>
+<div class="w3-padding">
+  <a href="/groups/new">
+    <input type="button" class="w3-button" value="Create a New Group" />
+  </a>
+</div>
+</div>
+{% endblock content %}
+
+
+{% block extend_head %}
+<link rel="stylesheet" href="/static/css/table.css">
+{% endblock extend_head %}

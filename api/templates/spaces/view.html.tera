@@ -1,0 +1,120 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="heading w3-padding">
+  {% if space.is_public %}
+  <h1 tabindex="0" aria-label="{{ space.space_name }}">{{ space.space_name }}</h1>
+  {% else %}
+  <h1 tabindex="0" aria-label="Private Space {{ space.space_name }}">🔒{{ space.space_name }}</h1>
+  {% endif %}
+</div>
+<div class="space">
+  <nav aria-label="Posts">
+    <ul class="treeview-navigation" role="tree" aria-label="Posts">
+      <li role="none">
+        <a role="treeitem" aria-expanded="true" aria-owns="subtree" href="#">
+                  <span class="label">
+                    <span class="icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="10" viewBox="0 0 13 10">
+                        <polygon points="2 1, 12 1, 7 9"></polygon>
+                      </svg>
+                    </span>
+                    Last 10 Posts
+                  </span>
+        </a>
+        <ul id="subtree" role="group" aria-label="Last 10 Posts">
+          {% for post in posts | slice(end=10) %}
+          <li role="none">
+            <a role="treeitem" href="#{{ post.post_id }}">
+              <span class="label">{{ post.post_title }}</span>
+              <br><small>Last updated at {{ post.updated_at }} by {{ post.owner_id }}</small>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  <section class="main" aria-labelledby="id_page_title">
+    <div class="menubar-editor">
+      <ul role="menubar" aria-label="Text Formatting">
+        <li role="none">
+          <span role="menuitem" aria-haspopup="true" aria-expanded="false" tabindex="0">Font<span aria-hidden="true"></span></span>
+          <ul role="menu" data-option="font-family" aria-label="Font">
+            <li role="menuitemradio" aria-checked="true"><span aria-hidden="true"></span>Sans-serif</li>
+            <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Serif</li>
+            <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Monospace</li>
+            <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Fantasy</li>
+          </ul>
+        </li>
+        <li role="none">
+          <span role="menuitem" aria-haspopup="true" aria-expanded="false" tabindex="-1">Style/Color<span aria-hidden="true"></span></span>
+          <ul role="menu" aria-label="Style/Color">
+            <li role="none">
+              <ul role="group" data-option="font-style" aria-label="Font Style">
+                <li role="menuitemcheckbox" data-option="font-bold" aria-checked="false"><span aria-hidden="true"></span>Bold</li>
+                <li role="menuitemcheckbox" data-option="font-italic" aria-checked="false"><span aria-hidden="true"></span>Italic</li>
+              </ul>
+            </li>
+            <li role="separator"></li>
+            <li role="none">
+              <ul role="group" data-option="font-color" aria-label="Text Color">
+                <li role="menuitemradio" aria-checked="true"><span aria-hidden="true"></span>Black</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Blue</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Red</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Green</li>
+              </ul>
+            </li>
+            <li role="separator"></li>
+            <li role="none">
+              <ul role="group" data-option="text-decoration" aria-label="Text Decoration">
+                <li role="menuitemradio" aria-checked="true"><span aria-hidden="true"></span>None</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Overline</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Line-through</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Underline</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        <li role="none">
+          <span role="menuitem" aria-haspopup="true" aria-expanded="false" tabindex="-1">Text Align<span aria-hidden="true"></span></span>
+          <ul role="menu" data-option="text-align" aria-label="Text Align">
+            <li role="menuitemradio" aria-checked="true"><span aria-hidden="true"></span>Left</li>
+            <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Center</li>
+            <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Right</li>
+            <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Justify</li>
+          </ul>
+        </li>
+
+        <li role="none">
+          <span role="menuitem" aria-haspopup="true" aria-expanded="false" tabindex="-1">Size<span aria-hidden="true"></span></span>
+          <ul role="menu" aria-label="Size">
+            <li role="menuitem" data-option="font-smaller" aria-disabled="false">Smaller</li>
+            <li role="menuitem" data-option="font-larger" aria-disabled="false">Larger</li>
+            <li role="separator"></li>
+            <li role="none">
+              <ul role="group" data-option="font-size" aria-label="Font Sizes">
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>X-Small</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Small</li>
+                <li role="menuitemradio" aria-checked="true"><span aria-hidden="true"></span>Medium</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>Large</li>
+                <li role="menuitemradio" aria-checked="false"><span aria-hidden="true"></span>X-Large</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <div class="post-content ck-content" aria-label="Post Content">
+        <h2 style="text-align: center"></h2>
+        <p></p>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock content %}
+
+{% block extend_head %}
+<link rel="stylesheet" href="/static/css/space.css">
+<script src="/static/js/space.js"></script>
+<link rel="stylesheet" href="/static/css/space-editor.css">
+<script src="/static/js/space-editor.js"></script>
+{% endblock extend_head %}

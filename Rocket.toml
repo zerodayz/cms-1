@@ -1,6 +1,0 @@
-## defaults for _all_ profiles
-[default]
-secret_key = "pQVFH+fnAM2ITurpIOjkROkHvjLCZ4aLX63txrEpaEI="
-
-[global]
-address = "127.0.0.1"

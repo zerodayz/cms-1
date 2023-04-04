@@ -1,0 +1,95 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">Create a New Post</h1>
+</div>
+<div class="w3-padding">
+    <form action="/posts" method="post">
+      <textarea name="post_content" id="editor">
+      </textarea>
+      <div class="w3-padding-16">
+        <label for="space_id">Space ID:</label>
+        <input
+                type="number"
+                placeholder="enter space id"
+                name="space_id"
+                id="space_id"
+                value=""
+                class="u-full-width"
+        />
+        <br><small>This is the Space where your Post is saved.</small>
+      </div>
+      <div class="w3-padding-16">
+        <label for="owner_id">Owner ID:</label>
+        <input
+                type="number"
+                placeholder="enter owner id"
+                name="owner_id"
+                id="owner_id"
+                value=""
+                class="u-full-width"
+        />
+        <br><small>Enter the owner ID of the Post.</small>
+      </div>
+      <div class="w3-padding-16">
+        <label for="post_published">Published:</label>
+        <input
+                type="checkbox"
+                name="post_published"
+                id="post_published"
+                value="true"
+        />
+        <br><small>Check this box if you want your Post to be published.</small>
+      </div>
+    <div class="twelve columns">
+      <div class="two columns">
+        <a href="/posts">
+          <input type="button" class="w3-button" value="cancel" />
+        </a>
+      </div>
+      <div class="eight columns"></div>
+      <div class="two columns">
+        <input type="submit" class="w3-button" value="save post" />
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock content %}
+
+{% block extend_head %}
+<link rel="stylesheet" href="/static/css/ckeditor-custom.css">
+{% endblock extend_head %}
+
+{% block scripts %}
+<script>
+  const watchdog = new CKSource.EditorWatchdog();
+
+  window.watchdog = watchdog;
+
+  watchdog.setCreator( ( element, config ) => {
+    return CKSource.Editor
+            .create( element, config )
+            .then( editor => {
+              return editor;
+            } )
+  } );
+
+  watchdog.setDestructor( editor => {
+    return editor.destroy();
+  } );
+
+  watchdog.on( 'error', handleError );
+
+  watchdog
+          .create( document.querySelector( '#editor' ), {
+            licenseKey: '',
+          } )
+          .catch( handleError );
+
+  function handleError( error ) {
+    console.error( 'Oops, something went wrong!' );
+    console.error( 'Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:' );
+    console.warn( 'Build id: gc534c87fx7z-72sqms812p5' );
+    console.error( error );
+  }
+</script>
+{% endblock %}

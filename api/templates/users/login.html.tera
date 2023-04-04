@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang=en>
+{% block head %}
+<title>CMS - Login</title>
+{% block css %}
+<link rel="stylesheet" href="/static/css/w3.css">
+<link rel="stylesheet" href="/static/css/fonts.css">
+<link rel="stylesheet" href="/static/css/global.css">
+<link rel="stylesheet" href="/static/css/variables.css">
+<link rel="stylesheet" href="/static/css/menu.css">
+<link rel="stylesheet" href="/static/css/login.css">
+<!--To be able to access ARIA-->
+<script src="/static/js/table.js"></script>
+<script src="/static/js/login.js"></script>
+{% endblock css %}
+{% endblock head %}
+<body>
+<main>
+<div class="w3-row">
+    <div class="w3-login-form">
+        <form action="/users/login" method="POST" class="w3-center w3-margin w3-login-form w3-ai-bg">
+            <h1 id="page-title">Login</h1>
+            <p>
+                <img role="img" src="/static/images/Asset.png" aria-hidden="true" alt="CMS Platform Logo"  style="width:100px; padding:10px;">
+            </p>
+            <p>
+            {% if flash %}
+            <div id="alertDiv" class="w3-padding">
+                <div role="alert">
+                    {{ flash.kind }}: {{ flash.message }}
+                </div>
+            </div>
+            {% endif %}
+            </p>
+            <div class="w3-padding">
+                <div class="w3-left w3-padding-bottom-16">
+                    <label for="user_name">Username</label>
+                </div>
+                <input type="text" name="user_name" id="user_name" class="w3-input" required aria-label="Please enter your username" />
+            </div>
+            <div class="w3-padding">
+                <div class="w3-left w3-padding-bottom-16">
+                    <label for="user_password">Password</label>
+                </div>
+                <input type="password" name="user_password" id="user_password" class="w3-input" aria-label="Please enter your password" />
+            </div>
+
+            <div class="w3-row w3-padding">
+                <div class="w3-half w3-left-align">
+                    <input type="checkbox" name="remember" id="remember" class="w3-checkbox" aria-label="Check this box to remember your login" />
+                    <label for="remember">Remember Me</label>
+                </div>
+                <div class="w3-half w3-right">
+                    <input type="submit" class="w3-button w3-login-button" value="Login" aria-label="Login" />
+                    <a href="/" role="button" class="w3-button w3-login-button" aria-label="Skip to content">Skip to Content</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</main>
+<div id="arrow-keys-indicator" class="hidden"></div>
+
+</body>
+<script>
+    setTimeout(() => {
+        let get = document.getElementById('alertDiv');
+        get.style.display = 'none';
+
+    }, 5000);
+</script>
+</html>

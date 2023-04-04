@@ -1,0 +1,47 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">Create a New User</h1>
+</div>
+<div class="w3-padding">
+  <form action="/users" method="post">
+    <div class="w3-padding-16">
+      <label for="user_name">Username:</label>
+      <input
+              type="text"
+              aria-label="Enter username. This is the User's username."
+              placeholder="enter name"
+              name="user_name"
+              id="user_name"
+              value=""
+              autofocus
+              required
+              class="u-full-width"
+      />
+      <br><small>This is the User's username.</small>
+    </div>
+    <div class="w3-padding-16">
+      <label for="user_password">Password:</label>
+      <input
+              type="password"
+              placeholder="enter user password"
+              name="user_password"
+              id="user_password"
+              value=""
+              class="u-full-width"
+      />
+      <br><small>Enter the User's password.</small>
+    </div>
+    <div class="twelve columns">
+      <div class="two columns">
+        <a href="/users">
+          <input type="button" class="w3-button" value="cancel" />
+        </a>
+      </div>
+      <div class="eight columns"></div>
+      <div class="two columns">
+        <input type="submit" class="w3-button" value="save user" />
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

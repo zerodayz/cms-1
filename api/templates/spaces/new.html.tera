@@ -1,0 +1,59 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">Create a New Space</h1>
+</div>
+<div class="w3-padding">
+  <form action="/spaces" method="post">
+    <div class="w3-padding-16">
+      <label for="space_name">Space Name:</label>
+      <input
+              type="text"
+              aria-label="Enter Space name. This is how your Space will be named."
+              placeholder="enter name"
+              name="space_name"
+              id="space_name"
+              value=""
+              autofocus
+              required
+              class="u-full-width"
+      />
+      <br><small>This is how your Space will be named.</small>
+    </div>
+    <div class="w3-padding-16" >
+      <label for="is_public">Public Space:</label>
+      <input
+              type="checkbox"
+              name="is_public"
+              id="is_public"
+              value="true"
+              aria-label="Public Space checkbox. Check this box if you want your Space to be public."
+      />
+      <br><small>Check this box if you want your Space to be public.</small>
+      </label>
+    </div>
+    <div class="w3-padding-16">
+      <label for="owner_id">Owner ID:</label>
+      <input
+              type="number"
+              placeholder="enter owner id"
+              name="owner_id"
+              id="owner_id"
+              value=""
+              class="u-full-width"
+      />
+      <br><small>Enter the owner ID of the Space.</small>
+    </div>
+    <div class="twelve columns">
+      <div class="two columns">
+        <a href="/spaces">
+          <input type="button" class="w3-button" value="cancel" />
+        </a>
+      </div>
+      <div class="eight columns"></div>
+      <div class="two columns">
+        <input type="submit" class="w3-button" value="save space" />
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

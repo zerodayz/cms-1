@@ -1,0 +1,4 @@
+<p class="time">Last updated {{ post.updated_at }} by {{ post.owner_id }}</p>
+<div class="ck-content">
+    {{ post.post_content | safe }}
+</div>

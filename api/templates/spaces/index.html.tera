@@ -1,0 +1,72 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">My Spaces</h1>
+</div>
+<div class="table-wrap">
+  <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data w3-table-all">
+    <tbody class="table-navigation"><tr>
+      <th class="w3-left" tabindex="-1">Space Name</th>
+      <th aria-sort="ascending">
+        <span tabindex="-1" role="button">Created Date</span>
+      </th>
+      <th aria-sort="ascending">
+        <span tabindex="-1" role="button">Last Updated Date</span>
+      </th>
+      <th class="w3-left" tabindex="-1">Owner ID</th>
+      <th tabindex="-1">Actions</th>
+    </tr>
+    {% for space in spaces %}
+    <tr>
+      <td tabindex="-1">
+        {% if space.is_public %}
+        <span aria-label="{{ space.space_name }}">{{ space.space_name }}</span>
+        {% else %}
+        <span aria-label="Private Space {{ space.space_name }}">🔒{{ space.space_name }}</span>
+        {% endif %}
+      </td>
+      <td tabindex="-1">{{ space.created_at }}</td>
+      <td tabindex="-1">{{ space.updated_at }}</td>
+      <td tabindex="-1">{{ space.owner_id }}</td>
+      <td>
+        <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu{{ space.space_id }}">Actions</button>
+        <ul role="menu" id="menu{{ space.space_id }}">
+          <li role="menuitem"><a href="/spaces/{{ space.space_id }}" class="w3-button w3-table-button">Edit Space</a></li>
+          <li role="menuitem"><a href="/spaces/{{ space.space_id }}/view" class="w3-button w3-table-button">View Space</a></li>
+        </ul>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+      <td></td>
+      <td></td>
+      <td>
+        {% if page == 1 %} Previous {% else %}
+        <a href="/spaces?page={{ page - 1 }}&spaces_per_page={{ spaces_per_page }}"
+        >Previous</a
+        >
+        {% endif %} | {% if page == num_pages %} Next {% else %}
+        <a href="/spaces?page={{ page + 1 }}&spaces_per_page={{ spaces_per_page }}"
+        >Next</a
+        >
+        {% endif %}
+      </td>
+      <td></td>
+      <td></td>
+    </tr>
+    </tfoot>
+  </table>
+</div>
+<div class="w3-padding">
+  <a href="/spaces/new">
+    <input type="button" class="w3-button" value="Create a New Space" />
+  </a>
+</div>
+</div>
+{% endblock content %}
+
+
+{% block extend_head %}
+<link rel="stylesheet" href="/static/css/table.css">
+{% endblock extend_head %}

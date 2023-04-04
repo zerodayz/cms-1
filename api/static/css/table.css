@@ -1,0 +1,167 @@
+.annotate {
+    font-style: italic;
+    color: #366ed4;
+}
+
+:focus {
+    outline: var(--cms-editor-focus-color) solid 2px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.table-navigation [role="button"] {
+    cursor: pointer;
+}
+
+.table-navigation [aria-sort="ascending"] {
+    position: relative;
+}
+
+.table-navigation [aria-sort="ascending"]::after {
+    content: " ";
+    border-bottom: 0.4em solid black;
+    border-left: 0.4em solid transparent;
+    border-right: 0.4em solid transparent;
+    position: absolute;
+    right: 1em;
+    top: 0.8em;
+}
+
+.table-navigation [aria-sort="descending"] {
+    position: relative;
+}
+
+.table-navigation [aria-sort="descending"]::after {
+    content: " ";
+    border-left: 0.4em solid transparent;
+    border-right: 0.4em solid transparent;
+    border-top: 0.4em solid black;
+    position: absolute;
+    right: 1em;
+    top: 0.8em;
+}
+
+.table-navigation .edit-text-button {
+    color: #360;
+    display: block;
+    position: relative;
+}
+
+.table-navigation .edit-text-button::after {
+    background-image: url("/static/images/pencil-icon.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 44px;
+    content: " ";
+    height: 17px;
+    opacity: 0.6;
+    position: absolute;
+    right: -24px;
+    top: 0;
+    width: 20px;
+}
+
+.table-navigation .edit-text-button:hover,
+.table-navigation .edit-text-button:focus {
+    color: var(--cms-editor-focus-color);
+}
+
+.table-navigation .edit-text-button:hover::after,
+.table-navigation .edit-text-button:focus::after {
+    opacity: 1;
+}
+
+.table-navigation [role="gridcell"]:focus,
+.table-navigation [role="gridcell"] *:focus,
+.table-navigation [role="grid"] [tabindex="0"]:focus {
+    outline: var(--cms-editor-focus-color);
+    outline-style: solid;
+    outline-width: 2px;
+}
+
+#arrow-keys-indicator {
+    bottom: 10px;
+    left: 0;
+    margin-left: 10px;
+    position: fixed;
+    height: 65px;
+    width: 85px;
+    background: url("/static/images/black_keys.png") no-repeat;
+    background-size: contain;
+}
+
+@media screen and (max-width: 1000px) {
+    #arrow-keys-indicator {
+        display: none;
+    }
+}
+.table-navigation button {
+    cursor: pointer;
+    font-size: 110%;
+}
+
+.table-navigation .menu-wrapper {
+    position: relative;
+}
+
+.table-navigation ul[role="menu"] {
+    display: none;
+    position: absolute;
+    margin: 0;
+    z-index: 1;
+}
+
+.table-navigation ul[role="menu"] li {
+    list-style: none;
+}
+
+.table-navigation [role="menu"], .table-navigation [role="menu"] {
+    display: block;
+    width: 10em;
+    margin: 2px;
+    padding: 8px;
+    background-color: var(--cms-bg-color);
+    border: 2px solid var(--cms-editor-focus-color);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    color: var(--cms-text-color);
+}
+
+.table-navigation [role="menu"] [role="menuitem"] a:focus, .table-navigation [role="menu"] [role="menuitem"] a:hover {
+    background-color: var(--cms-bg-color);
+}
+
+.table-navigation [role="menuitem"] {
+    padding: 7px 4px;
+}
+
+.w3-table-button {
+    display: block;
+    text-align: left;
+    padding: unset;
+}
+
+.w3-table-button:hover, .w3-table-button:focus {
+    background-color: var(--cms-bg-color) !important;
+}
+
+.w3-login-form:hover, .w3-login-form:focus {
+    border: var(--cms-editor-focus-color) solid 3px;
+}
+
+.w3-login-form-selected {
+    border: var(--cms-editor-focus-color) solid 3px;
+}
+
+.w3-table-all {
+    border: unset;
+}
+
+.w3-table-all tr:nth-child(odd) {
+    background-color: var(--cms-bg-color)
+}
+
+.w3-table-all tr:nth-child(even) {
+    background-color: var(--cms-page-heading-bg-color)
+}

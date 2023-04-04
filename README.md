@@ -1,14 +1,14 @@
-# CMS 1
+# CMS 2
 
-![CMS1](static/images/screenshot_march.png)
+![CMS2](api/static/images/screenshot_march.png)
 
-CMS 1 is a CMS written in Rust. It is a work in progress.
+CMS 2 is a CMS written in Rust. It is a work in progress.
 
 It is a hobby project to learn Rust and to create a CMS that is easy to use and easy to deploy.
 
-The CMS 1 is aiming to be fully accessible.
+The CMS 2 is aiming to be fully accessible.
 
-## Deploy CMS 1
+## Deploy CMS 2
 
 ### Rust
 
@@ -20,20 +20,11 @@ source "$HOME/.cargo/env"
 rustup update
 ```
 
-### Diesel
-
-You will need to have [Diesel](https://diesel.rs/) installed on your system.
-
-```bash
-yum install mariadb-devel
-cargo install diesel_cli --no-default-features --features mysql
-```
-
 ### Podman
 
 You will need to have [Podman](https://podman.io/) installed on your system.
 
-### CMS-1
+### CMS-2
 
 #### 1. Deploy MySQL database:
 
@@ -45,34 +36,15 @@ export MYSQL_PASSWORD=cmspassword
 podman run --name cms-backend-db -p 3307:3306/tcp -e MYSQL_ROOT_PASSWORD -e MYSQL_DATABASE -e MYSQL_USER -e MYSQL_PASSWORD -d mariadb:latest
 ```
 
-#### 2. Setup the DB with diesel within `cms` directory:
+#### 2. Setup the DB:
 
 ```bash
-export DATABASE_URL=mysql://cms:cmspassword@127.0.0.1:3307/cms
-echo "DATABASE_URL=mysql://cms:cmspassword@127.0.0.1:3307/cms" > .env
-diesel migration run
-```
-
-#### 3. Setup config.toml
-
-```bash
-[database]
-# Instead of localhost, you have to use an IP address 127.0.0.1
-host = "127.0.0.1"
-port = 3307
-user = "cms"
-password = "cmspassword"
-name = "cms"
-```
-
-#### 4. Create a user (usually first user):
-```bash
-cargo run --bin create_user
+sea-orm-cli migrate up
 ```
 
 ### Deploy CMS:
 
 ```bash
-cargo run --release --package cms --bin cms
+cargo run --release
 ```
 

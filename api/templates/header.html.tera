@@ -1,0 +1,128 @@
+<!-- Header -->
+<nav>
+  <div class="w3-row">
+    <ul class="menubar-navigation" role="menubar" aria-label="Navigation">
+        <li id="navigation" role="none">
+          <a id="home" role="menuitem" href="/spaces/1/view"> Home </a>
+        </li>
+        <li role="none">
+          <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#posts">
+            Posts
+            <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+              <polygon points="1 0, 11 0, 6 8"></polygon>
+            </svg>
+          </a>
+          <ul role="menu" aria-label="Posts">
+            <li role="none">
+              <a role="menuitem" href="/posts/new">Create a New Post</a>
+            </li>
+            <li role="none">
+              <a role="menuitem" href="/posts">My Posts</a>
+            </li>
+          </ul>
+        </li>
+        <li role="none">
+          <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#spaces">
+            Spaces
+            <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+              <polygon points="1 0, 11 0, 6 8"></polygon>
+            </svg>
+          </a>
+          <ul role="menu" aria-label="Spaces">
+            <li role="none">
+              <a role="menuitem" href="/spaces/new">Create a New Space</a>
+            </li>
+            <li role="none">
+              <a role="menuitem" href="/spaces">My Spaces</a>
+            </li>
+          </ul>
+        </li>
+        <li role="none">
+            <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#users">
+                Users
+                <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+                    <polygon points="1 0, 11 0, 6 8"></polygon>
+                </svg>
+            </a>
+            <ul role="menu" aria-label="Users">
+                <li role="none">
+                    <a role="menuitem" href="/users/new">Create a New User</a>
+                </li>
+                <li role="none">
+                    <a role="menuitem" href="/users">Users</a>
+                </li>
+            </ul>
+        </li>
+        <li role="none">
+            <a role="menuitem" aria-haspopup="true" aria-expanded="false" href="#groups">
+                Groups
+                <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+                    <polygon points="1 0, 11 0, 6 8"></polygon>
+                </svg>
+            </a>
+            <ul role="menu" aria-label="Groups">
+                <li role="none">
+                    <a role="menuitem" href="/groups/new">Create a New Group</a>
+                </li>
+                <li role="none">
+                    <a role="menuitem" href="/groups">Groups</a>
+                </li>
+            </ul>
+        </li>
+        <div class="right-menu">
+            <li role="none">
+                <a role="menuitem" class="right-menuitem" aria-haspopup="true" aria-expanded="false" href="#controls">
+                    Controls
+                    <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+                        <polygon points="1 0, 11 0, 6 8"></polygon>
+                    </svg>
+                </a>
+                <ul role="menu" aria-label="Controls">
+                    <li role="none">
+                        <button type="button" role="switch" aria-checked="true">
+                            <span class="label">Lights</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="36">
+                                <rect class="container" x="1" y="1" width="34" height="18" rx="4"></rect>
+                                <rect class="off" x="4" y="4" width="12" height="12" rx="4"></rect>
+                                <rect class="on" x="20" y="4" width="12" height="12" rx="4"></rect>
+                            </svg>
+                            <span class="on" aria-hidden="true">On</span>
+                            <span class="off" aria-hidden="true">Off</span>
+                        </button>
+                    </li>
+                </ul>
+            </li>
+            {% if logged_in_user and logged_in_user.user_id == 0 %}
+            <li role="none">
+                <a role="menuitem" class="right-menuitem" aria-haspopup="true" aria-expanded="false" href="#user">
+                    Hello {{ logged_in_user.user_name }}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+                        <polygon points="1 0, 11 0, 6 8"></polygon>
+                    </svg>
+                </a>
+                <ul role="menu" aria-label="Profile Settings">
+                    <li role="none">
+                        <a role="menuitem" href="/users/login">Login</a>
+                    </li>
+                </ul>
+            </li>
+            {% endif %}
+            {% if logged_in_user and logged_in_user.user_id != 0 %}
+            <li role="none">
+                <a role="menuitem" class="right-menuitem" aria-haspopup="true" aria-expanded="false" href="#user">
+                    Hello {{ logged_in_user.user_name }}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="down" width="12" height="9" viewBox="0 0 12 9">
+                        <polygon points="1 0, 11 0, 6 8"></polygon>
+                    </svg>
+                </a>
+                <ul role="menu" aria-label="Profile Settings">
+                    <li role="none">
+                        <a role="menuitem" href="/users/logout">Logout</a>
+                    </li>
+                </ul>
+            </li>
+            {% endif %}
+        </div>
+    </ul>
+  </div>
+</nav>

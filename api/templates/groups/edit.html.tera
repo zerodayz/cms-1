@@ -1,0 +1,35 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="heading w3-padding">
+  <h1 tabindex="0" id="page-title">Edit Group</h1>
+</div>
+<div class="w3-padding">
+  <form action="/groups/{{ group.group_id }}" method="post">
+    <div class="w3-padding-16">
+      <label for="group_name">Group Name:</label>
+      <input
+              type="text"
+              name="group_name"
+              id="group_name"
+              value="{{ group.group_name }}"
+              class="u-full-width"
+      />
+    </div>
+    <div class="twelve columns">
+      <div class="two columns">
+        <a href="/groups">
+          <input type="button" class="w3-button" value="cancel" />
+        </a>
+      </div>
+      <div class="eight columns"></div>
+      <div class="two columns">
+        <input type="submit" class="w3-button" value="save group" />
+      </div>
+    </div>
+  </form>
+  <div class="two columns">
+    <form action="/groups/delete/{{ group.group_id }}" method="POST">
+      <input id="delete-button" class="w3-button" type="submit" value="delete group" />
+    </form>
+  </div>
+</div>
+{% endblock content %}

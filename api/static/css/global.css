@@ -1,0 +1,46 @@
+/* Use custom Adobe font from fonts.css */
+body,h1,h2,h3,h4,h5 {
+    font-family: "Raleway", sans-serif
+}
+
+body {
+    background-color: var(--cms-bg-color);
+    color: var(--cms-text-color);
+}
+
+.heading {
+    background-color: var(--cms-page-heading-bg-color);
+    border-bottom: var(--cms-border-color) 1px solid;
+}
+
+.heading h1 {
+    margin:0;
+}
+
+.heading h1:focus {
+    outline: var(--cms-editor-focus-color) 2px solid;);
+}
+
+.w3-padding-bottom-16 {
+    padding-bottom: 10px;
+}
+
+#post {
+    padding: 16px;
+}
+
+[role="alert"] {
+    padding: 10px;
+    border: 2px solid hsl(206deg 74% 54%);
+    border-radius: 4px;
+    background: hsl(206deg 74% 90%);
+    color: var(--cms-menu-bg-color);
+}
+
+[role="alert"]:empty {
+    display: none;
+}
+
+.heading-borderless {
+    background-color: var(--cms-page-heading-bg-color);
+}
