@@ -21,14 +21,16 @@
                   </span>
         </a>
         <ul id="subtree" role="group" aria-label="Last 10 Posts">
-          {% for post in posts | slice(end=10) %}
-          <li role="none">
-            <a role="treeitem" href="#{{ post.post_id }}">
-              <span class="label">{{ post.post_title }}</span>
-              <br><small>Last updated at {{ post.updated_at }} by {{ post.owner_id }}</small>
-            </a>
-          </li>
-          {% endfor %}
+          {% if posts %}
+            {% for post in posts | slice(end=10) %}
+            <li role="none">
+              <a role="treeitem" href="#{{ post.post_id }}">
+                <span class="label">{{ post.post_title }}</span>
+                <br><small>Last updated at {{ post.updated_at }} by {{ post.owner_id }}</small>
+              </a>
+            </li>
+            {% endfor %}
+          {% endif %}
         </ul>
       </li>
     </ul>

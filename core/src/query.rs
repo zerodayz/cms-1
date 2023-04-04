@@ -100,7 +100,10 @@ impl Query {
         let paginator = Post::find()
             .filter(
                 posts::Column::SpaceId
-                    .eq(space_id),
+                    .eq(space_id).and(
+                    posts::Column::PostPublished
+                        .eq(true),
+                )
             )
             .order_by_asc(posts::Column::PostId)
             .paginate(db, posts_per_page);

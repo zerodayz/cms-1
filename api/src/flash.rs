@@ -1,9 +1,10 @@
 use axum::{http::{header, HeaderMap, HeaderValue, StatusCode}, response::Response};
-use axum::response::{IntoResponse, Redirect};
+use axum::response::{Html, IntoResponse, Redirect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use tower_cookies::{Cookie, Cookies};
 use cookie::Expiration;
 use cookie::time::{Duration, OffsetDateTime};
+use crate::AppState;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct FlashData {
@@ -94,6 +95,19 @@ pub fn get_flash_cookie(cookies: &Cookies) -> Option<FlashData> {
     } else {
         None
     }
+}
+
+pub fn add_cookies(cookies: &mut Cookies, data: Data) -> () {
+    let mut cookie = Cookie::new(
+        FLASH_MESSAGE_NAME,
+        serde_json::to_string(&data.flash).unwrap(),
+    );
+    cookie.set_path("/");
+    cookie.expires();
+    let mut now = OffsetDateTime::now_utc();
+    now += Duration::seconds(5);
+    cookie.set_expires(now);
+    cookies.add(cookie);
 }
 
 pub type LoginResponse = (StatusCode, HeaderMap);

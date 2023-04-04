@@ -9,7 +9,7 @@ use csm_core::{
 };
 use entity::users::Model as UserModel;
 use entity::*;
-use flash::{guard_response, get_flash_cookie, post_response, PostResponse, get_token_cookie, login_response, LoginResponse, logout_response, LogoutResponse, Data, FlashData, TokenData};
+use flash::{guard_response, get_flash_cookie, post_response, add_cookies, PostResponse, get_token_cookie, login_response, LoginResponse, logout_response, LogoutResponse, Data, FlashData, TokenData};
 use migration::{Migrator, MigratorTrait};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -74,7 +74,7 @@ async fn start() -> anyhow::Result<()> {
         .route("/spaces/:id/view", get(view_space))
         .route("/posts/:id/view", get(view_post))
         .route("/posts/:id/raw", get(raw_post))
-        .route_layer(middleware::from_fn_with_state(state.clone(), guard_no_fail))
+        .route_layer(middleware::from_fn_with_state(state.clone(), no_guard))
         .nest_service(
             "/static",
             get_service(ServeDir::new(concat!(
@@ -137,7 +137,7 @@ async fn guard<T>(
 }
 
 
-async fn guard_no_fail<T>(
+async fn no_guard<T>(
     state: State<AppState>,
     cookies: Cookies,
     mut request: Request<T>,
@@ -606,13 +606,41 @@ async fn view_space(
     state: State<AppState>,
     Path(id): Path<i32>,
     Query(params): Query<Params>,
-    cookies: Cookies,
+    mut cookies: Cookies,
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let mut ctx = tera::Context::new();
+
     let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, id)
         .await
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {id}"));
+
+    if !space.is_public && space.owner_id != Some(logged_in_user.user_id) {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to view the page.".to_string(),
+            }),
+        };
+
+        add_cookies(&mut cookies, data);
+
+        ctx.insert("logged_in_user", &logged_in_user);
+        ctx.insert("space", &space);
+
+        if let Some(value) = get_flash_cookie(&cookies) {
+            ctx.insert("flash", &value);
+        }
+
+        let body = state
+            .templates
+            .render("spaces/view.html.tera", &ctx)
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+        return Ok(Html(body))
+    }
 
     let page = params.page.unwrap_or(1);
     let posts_per_page = params.items_per_page.unwrap_or(5);
@@ -621,7 +649,6 @@ async fn view_space(
         .await
         .expect("Cannot find posts in page");
 
-    let mut ctx = tera::Context::new();
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("space", &space);
     ctx.insert("posts", &posts);
