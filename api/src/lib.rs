@@ -1,6 +1,6 @@
 mod flash;
 
-use axum::{async_trait, extract::{FromRequestParts, Form, Path, Query, State, TypedHeader}, headers::{authorization::Bearer, Authorization}, http::{request::Parts, Request, StatusCode}, response::{IntoResponse, Response, Html}, routing::{get, get_service, post}, Json, RequestPartsExt, Router, Server, middleware, Extension, RequestExt};
+use axum::{async_trait, extract::{Multipart, FromRequestParts, Form, Path, Query, State, TypedHeader}, headers::{authorization::Bearer, Authorization}, http::{request::Parts, Request, StatusCode}, response::{IntoResponse, Response, Html}, routing::{get, get_service, post}, Json, RequestPartsExt, Router, Server, middleware, Extension, RequestExt};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use once_cell::sync::Lazy;
 use csm_core::{
@@ -20,8 +20,11 @@ use axum::http::{header, HeaderMap, HeaderValue};
 use axum::response::Redirect;
 use chrono::{Duration, Utc};
 use tera::Tera;
+use tokio::fs::File;
+use tokio::io::AsyncWriteExt;
 use tower_cookies::{Cookie, CookieManagerLayer, Cookies};
 use tower_http::services::ServeDir;
+use uuid::Uuid;
 
 static KEYS: Lazy<Keys> = Lazy::new(|| {
     let secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
@@ -74,6 +77,7 @@ async fn start() -> anyhow::Result<()> {
         .route("/spaces/:id/view", get(view_space))
         .route("/posts/:id/view", get(view_post))
         .route("/posts/:id/raw", get(raw_post))
+        .route("/upload", post(upload))
         .route_layer(middleware::from_fn_with_state(state.clone(), no_guard))
         .nest_service(
             "/static",
@@ -856,6 +860,27 @@ async fn view_post(
         .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
 
     Ok(Html(body))
+}
+
+async fn upload(
+    state: State<AppState>,
+    mut cookies: Cookies,
+    mut multipart: Multipart
+) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let id = Uuid::new_v4().to_string();
+    while let Some(mut field) = multipart.next_field().await.unwrap() {
+        let data = field.bytes().await.unwrap();
+
+        let mut file = File::create(format!("api/static/uploads/images/{}", id)).await.unwrap();
+        file.write_all(&data).await
+            .expect("could not write file");
+    }
+    let file_name = format!("http://127.0.0.1:8000/static/uploads/images/{}", id);
+    let json = json!({
+        "url": file_name,
+    }).to_string();
+
+    Ok(Html(json))
 }
 
 async fn raw_post(

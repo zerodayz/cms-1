@@ -32,7 +32,7 @@ class NavigationSpaceContentGenerator {
         if (url.length === 0) {
             return content;
         }
-        // Get post from /post/linkURL
+
         $.ajax({
             url: '/posts/' + url + '/raw',
             type: 'GET',

@@ -82,6 +82,9 @@
   watchdog
           .create( document.querySelector( '#editor' ), {
             licenseKey: '',
+            simpleUpload: {
+              uploadUrl: document.location.origin + '/upload',
+            }
           } )
           .catch( handleError );
 
