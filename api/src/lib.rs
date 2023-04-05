@@ -868,6 +868,10 @@ async fn upload(
     mut multipart: Multipart
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
     let id = Uuid::new_v4().to_string();
+    let domain = env::var("DOMAIN").expect("DOMAIN is not set in .env file");
+    let port = env::var("PORT").expect("PORT is not set in .env file");
+
+    let server_url = format!("{domain}:{port}");
     while let Some(mut field) = multipart.next_field().await.unwrap() {
         let data = field.bytes().await.unwrap();
 
@@ -875,7 +879,7 @@ async fn upload(
         file.write_all(&data).await
             .expect("could not write file");
     }
-    let file_name = format!("http://127.0.0.1:8000/static/uploads/images/{}", id);
+    let file_name = format!("{}/static/uploads/images/{}", server_url, id);
     let json = json!({
         "url": file_name,
     }).to_string();
