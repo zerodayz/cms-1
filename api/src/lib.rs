@@ -869,9 +869,8 @@ async fn upload(
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
     let id = Uuid::new_v4().to_string();
     let domain = env::var("DOMAIN").expect("DOMAIN is not set in .env file");
-    let port = env::var("PORT").expect("PORT is not set in .env file");
 
-    let server_url = format!("{domain}:{port}");
+    let server_url = format!("{domain}");
     while let Some(mut field) = multipart.next_field().await.unwrap() {
         let data = field.bytes().await.unwrap();
 
