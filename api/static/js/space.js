@@ -103,7 +103,7 @@ class TreeViewNavigation {
         if (h2Node) {
             h2Node.innerHTML = linkName;
         }
-        paraNodes = document.querySelectorAll('.post-content p');
+        paraNodes = document.querySelectorAll('.post-content #post-paragraph');
         paraNodes.forEach(
             (p) =>
                 (p.innerHTML = this.contentGenerator.renderParagraph(linkURL, linkName))

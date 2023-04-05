@@ -113,7 +113,7 @@
       </ul>
       <div class="post-content ck-content" aria-label="Post Content">
         <h2 style="text-align: center"></h2>
-        <p></p>
+        <p id="post-paragraph"></p>
       </div>
     </div>
   </section>
