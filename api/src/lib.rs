@@ -826,7 +826,7 @@ async fn view_post(
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {space_id}"));
 
-    if !space.is_public && space.owner_id != Some(logged_in_user.user_id) {
+    if (!space.is_public || !post.post_published) && space.owner_id != Some(logged_in_user.user_id) {
         let data = Data {
             token: None,
             flash: Option::from(FlashData {
@@ -895,6 +895,16 @@ async fn raw_post(
         .await
         .expect("could not find post")
         .unwrap_or_else(|| panic!("could not find post with id {id}"));
+
+    let space_id = post.space_id;
+    let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, post.space_id)
+        .await
+        .expect("could not find space")
+        .unwrap_or_else(|| panic!("could not find space with id {space_id}"));
+
+    if (!space.is_public || !post.post_published) && space.owner_id != Some(logged_in_user.user_id) {
+        return Err((StatusCode::FORBIDDEN, "You are not allowed to view the page."))
+    }
 
     let mut ctx = tera::Context::new();
     ctx.insert("logged_in_user", &logged_in_user);
