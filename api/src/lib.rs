@@ -448,17 +448,29 @@ async fn new_group(
 
 async fn edit_group(
     state: State<AppState>,
+    Query(params): Query<Params>,
     Path(id): Path<i32>,
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let page = params.page.unwrap_or(1);
+    let users_per_page = params.items_per_page.unwrap_or(5);
+
     let group: groups::Model = QueryCore::find_group_by_id(&state.conn, id)
         .await
         .expect("could not find group")
         .unwrap_or_else(|| panic!("could not find group with id {id}"));
 
+    let (users, num_pages) = QueryCore::find_group_users_in_page(&state.conn, id, page, users_per_page)
+        .await
+        .expect("Cannot find groups in page");
+
     let mut ctx = tera::Context::new();
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("group", &group);
+    ctx.insert("users", &users);
+    ctx.insert("page", &page);
+    ctx.insert("users_per_page", &users_per_page);
+    ctx.insert("num_pages", &num_pages);
 
     let body = state
         .templates

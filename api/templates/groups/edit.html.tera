@@ -2,7 +2,9 @@
 <div class="heading w3-padding">
   <h1 tabindex="0" id="page-title">Edit Group</h1>
 </div>
+
 <div class="w3-padding">
+  <h2 tabindex="0">Group Configuration</h2>
   <form action="/groups/{{ group.group_id }}" method="post">
     <div class="w3-padding-16">
       <label for="group_name">Group Name:</label>
@@ -32,4 +34,63 @@
     </form>
   </div>
 </div>
+
+<div class="w3-padding">
+  <h2 tabindex="0">Group Membership</h2>
+</div>
+<div class="table-wrap">
+  <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data w3-table-all">
+    <tbody class="table-navigation">
+    <tr>
+      <th class="w3-left" tabindex="-1">User Name</th>
+      <th tabindex="-1">User ID</th>
+      <th aria-sort="ascending">
+        <span tabindex="-1" role="button">Created Date</span>
+      </th>
+      <th aria-sort="ascending">
+        <span tabindex="-1" role="button">Last Updated Date</span>
+      </th>
+      <th tabindex="-1">Actions</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+      <td class="w3-left" tabindex="-1">{{ user.user_name }}</td>
+      <td tabindex="-1">{{ user.user_id }}</td>
+      <td tabindex="-1">{{ user.created_at }}</td>
+      <td tabindex="-1">{{ user.updated_at }}</td>
+      <td>
+        <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu{{ group.group_id }}">Actions</button>
+        <ul role="menu" id="menu{{ group.group_id }}">
+          <li role="menuitem"><a href="/groups/{{ group.group_id }}" class="w3-button w3-table-button">Edit Group</a></li>
+        </ul>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+      <td></td>
+      <td></td>
+      <td>
+        {% if page == 1 %} Previous {% else %}
+        <a href="/groups/{{ group.group_id }}?page={{ page - 1 }}&users_per_page={{ users_per_page }}"
+        >Previous</a
+        >
+        {% endif %} | {% if page == num_pages %} Next {% else %}
+        <a href="/groups/{{ group.group_id }}?page={{ page + 1 }}&users_per_page={{ users_per_page }}"
+        >Next</a
+        >
+        {% endif %}
+      </td>
+      <td></td>
+      <td></td>
+    </tr>
+    </tfoot>
+  </table>
+</div>
+
 {% endblock content %}
+
+{% block extend_head %}
+<link rel="stylesheet" href="/static/css/table.css">
+{% endblock extend_head %}

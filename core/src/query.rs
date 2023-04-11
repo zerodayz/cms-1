@@ -61,6 +61,33 @@ impl Query {
             .await
     }
 
+    /// User Groups: Get Group Users
+    pub async fn find_group_users_in_page(
+        db: &DbConn,
+        id: i32,
+        page: u64,
+        users_per_page: u64,
+    ) -> Result<(Vec<users::Model>, u64), DbErr> {
+        /// Get all group users
+        let group_users: Vec<groups_users::Model> = UserGroup::find()
+            .filter(groups_users::Column::GroupId.eq(id))
+            .all(db)
+            .await?;
+
+        /// Get all users
+        let paginator = User::find()
+            .filter(
+                users::Column::UserId
+                    .is_in(group_users.iter().map(|u| u.user_id)),
+            )
+            .order_by_asc(users::Column::UserId)
+            .paginate(db, users_per_page);
+        let num_pages = paginator.num_pages().await?;
+
+        // Fetch paginated users
+        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+    }
+
     /// Groups
     pub async fn find_group_by_id(db: &DbConn, id: i32) -> Result<Option<groups::Model>, DbErr> {
         Group::find_by_id(id).one(db).await
