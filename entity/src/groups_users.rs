@@ -13,6 +13,11 @@ pub struct Model {
     pub group_id: i32,
 }
 
+#[derive(Clone, Debug, Deserialize)]
+pub struct RemoveMembersForm {
+    pub remove_user_ids: String,
+}
+
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(

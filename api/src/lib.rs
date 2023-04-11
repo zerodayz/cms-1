@@ -1,6 +1,6 @@
 mod flash;
 
-use axum::{async_trait, extract::{Multipart, FromRequestParts, Form, Path, Query, State, TypedHeader}, headers::{authorization::Bearer, Authorization}, http::{request::Parts, Request, StatusCode}, response::{IntoResponse, Response, Html}, routing::{get, get_service, post}, Json, RequestPartsExt, Router, Server, middleware, Extension, RequestExt};
+use axum::{async_trait, extract::{Multipart, FromRequestParts, Form, Path, Query, State, TypedHeader}, headers::{authorization::Bearer, Authorization}, http::{request::Parts, Request, StatusCode}, response::{IntoResponse, Response, Html}, routing::{get, get_service, post}, Json, RequestPartsExt, Router, debug_handler, Server, middleware, Extension, RequestExt};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use once_cell::sync::Lazy;
 use csm_core::{
@@ -59,6 +59,7 @@ async fn start() -> anyhow::Result<()> {
         .route("/users/:id", get(edit_user).post(update_user))
         .route("/users/new", get(new_user))
         .route("/users/delete/:id", post(delete_user))
+        .route("/users/group/:id", post(remove_user_from_group))
         .route("/groups", get(list_groups).post(create_group))
         .route("/groups/:id", get(edit_group).post(update_group))
         .route("/groups/new", get(new_group))
@@ -266,7 +267,7 @@ async fn update_user(
             message: "User successfully updated".to_owned(),
         }),
     };
-    let path = "/users";
+    let path = "/users".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -286,9 +287,43 @@ async fn delete_user(
             message: "User successfully deleted".to_owned(),
         }),
     };
-    let path = "/users";
+    let path = "/users".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
+
+#[debug_handler]
+async fn remove_user_from_group(
+    state: State<AppState>,
+    mut cookies: Cookies,
+    Path(id): Path<i32>,
+    form: Form<groups_users::RemoveMembersForm>,
+) -> Result<PostResponse, (StatusCode, String)> {
+    let form = form.0;
+    /// Create Vec<i32> from comma separated string
+    let remove_user_ids: Vec<i32> = form
+        .remove_user_ids
+        .split(',')
+        .map(|s| s.parse::<i32>().unwrap())
+        .collect();
+
+    MutationCore::remove_users_from_group(&state.conn, id, remove_user_ids)
+        .await
+        .expect("could not remove users from group");
+
+    let message = format!("Users {} successfully removed", form.remove_user_ids);
+    let data = Data {
+        token: None,
+        flash: Option::from(FlashData {
+            kind: "Success".to_owned(),
+            message,
+        })
+    };
+    let path = "/groups/";
+    let new_path = format!("{}{}", path, id);
+
+    Ok(post_response(&mut cookies, data, new_path))
+}
+
 
 async fn login(
     state: State<AppState>,
@@ -391,7 +426,7 @@ async fn create_user(
             message: "User successfully created".to_owned(),
         })
     };
-    let path = "/users";
+    let path = "/users".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -448,6 +483,7 @@ async fn new_group(
 
 async fn edit_group(
     state: State<AppState>,
+    mut cookies: Cookies,
     Query(params): Query<Params>,
     Path(id): Path<i32>,
     Extension(logged_in_user): Extension<UserModel>,
@@ -471,6 +507,10 @@ async fn edit_group(
     ctx.insert("page", &page);
     ctx.insert("users_per_page", &users_per_page);
     ctx.insert("num_pages", &num_pages);
+
+    if let Some(value) = get_flash_cookie(&cookies) {
+        ctx.insert("flash", &value);
+    }
 
     let body = state
         .templates
@@ -499,7 +539,7 @@ async fn update_group(
             message: "Group successfully updated".to_owned(),
         })
     };
-    let path = "/groups";
+    let path = "/groups".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -519,7 +559,7 @@ async fn delete_group(
             message: "Group successfully deleted".to_owned(),
         })
     };
-    let path = "/groups";
+    let path = "/groups".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -541,7 +581,7 @@ async fn create_group(
             message: "Group successfully created".to_owned(),
         })
     };
-    let path = "/groups";
+    let path = "/groups".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -702,7 +742,7 @@ async fn update_space(
             message: "Space successfully updated".to_owned(),
         })
     };
-    let path = "/spaces";
+    let path = "/spaces".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -722,7 +762,7 @@ async fn delete_space(
             message: "Space successfully deleted".to_owned(),
         })
     };
-    let path = "/spaces";
+    let path = "/spaces".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -744,7 +784,7 @@ async fn create_space(
             message: "Space successfully created".to_owned(),
         })
     };
-    let path = "/spaces";
+    let path = "/spaces".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -814,7 +854,7 @@ async fn create_post(
             message: "Post successfully created".to_owned(),
         })
     };
-    let path = "/posts";
+    let path = "/posts".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -971,7 +1011,7 @@ async fn update_post(
             message: "Post successfully updated".to_owned(),
         })
     };
-    let path = "/posts";
+    let path = "/posts".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 
@@ -991,7 +1031,7 @@ async fn delete_post(
             message: "Post successfully deleted".to_owned(),
         })
     };
-    let path = "/posts";
+    let path = "/posts".to_string();
     Ok(post_response(&mut cookies, data, path))
 }
 

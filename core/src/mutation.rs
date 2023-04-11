@@ -97,6 +97,22 @@ impl Mutation {
         .await
     }
 
+    /// User Groups: Remove Users from Group
+    pub async fn remove_users_from_group(
+        db: &DbConn,
+        group_id: i32,
+        user_ids: Vec<i32>,
+    ) -> Result<DeleteResult, DbErr> {
+        let res: DeleteResult = UserGroup::delete_many()
+            .filter(
+                groups_users::Column::GroupId.eq(group_id)
+                    .and(groups_users::Column::UserId.is_in(user_ids)),
+            )
+            .exec(db)
+            .await?;
+        Ok(res)
+    }
+
     /// Spaces: Create Space
     pub async fn create_space(
         db: &DbConn,

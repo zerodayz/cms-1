@@ -48,7 +48,7 @@ pub fn guard_response(cookies: &mut Cookies, data: Data) -> Response
 
 pub type PostResponse = (StatusCode, HeaderMap);
 
-pub fn post_response(cookies: &mut Cookies, data: Data, path: &'static str) -> PostResponse
+pub fn post_response(cookies: &mut Cookies, data: Data, path: String) -> PostResponse
 {
     let mut data = data;
     let mut cookie = Cookie::new(
@@ -63,7 +63,7 @@ pub fn post_response(cookies: &mut Cookies, data: Data, path: &'static str) -> P
     cookies.add(cookie);
 
     let mut header = HeaderMap::new();
-    header.insert(header::LOCATION, HeaderValue::from_static(path));
+    header.insert(header::LOCATION, HeaderValue::from_str(&path).unwrap());
 
     (StatusCode::SEE_OTHER, header)
 }

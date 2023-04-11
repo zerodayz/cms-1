@@ -38,57 +38,82 @@
 <div class="w3-padding">
   <h2 tabindex="0">Group Membership</h2>
 </div>
-<div class="table-wrap">
-  <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data w3-table-all">
-    <tbody class="table-navigation">
-    <tr>
-      <th class="w3-left" tabindex="-1">User Name</th>
-      <th tabindex="-1">User ID</th>
-      <th aria-sort="ascending">
-        <span tabindex="-1" role="button">Created Date</span>
-      </th>
-      <th aria-sort="ascending">
-        <span tabindex="-1" role="button">Last Updated Date</span>
-      </th>
-      <th tabindex="-1">Actions</th>
-    </tr>
-    {% for user in users %}
-    <tr>
-      <td class="w3-left" tabindex="-1">{{ user.user_name }}</td>
-      <td tabindex="-1">{{ user.user_id }}</td>
-      <td tabindex="-1">{{ user.created_at }}</td>
-      <td tabindex="-1">{{ user.updated_at }}</td>
-      <td>
-        <button type="button" tabindex="-1" aria-haspopup="true" aria-controls="menu{{ group.group_id }}">Actions</button>
-        <ul role="menu" id="menu{{ group.group_id }}">
-          <li role="menuitem"><a href="/groups/{{ group.group_id }}" class="w3-button w3-table-button">Edit Group</a></li>
-        </ul>
-      </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-    <tfoot>
-    <tr>
-      <td></td>
-      <td></td>
-      <td>
-        {% if page == 1 %} Previous {% else %}
-        <a href="/groups/{{ group.group_id }}?page={{ page - 1 }}&users_per_page={{ users_per_page }}"
-        >Previous</a
-        >
-        {% endif %} | {% if page == num_pages %} Next {% else %}
-        <a href="/groups/{{ group.group_id }}?page={{ page + 1 }}&users_per_page={{ users_per_page }}"
-        >Next</a
-        >
-        {% endif %}
-      </td>
-      <td></td>
-      <td></td>
-    </tr>
-    </tfoot>
-  </table>
-</div>
+<form id="user-group-form" method="post">
+  <div class="table-wrap">
+    <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data w3-table-all">
+      <tbody class="table-navigation">
+      <tr>
+        <th tabindex="-1">Actions</th>
+        <th class="w3-left" tabindex="-1">User Name</th>
+        <th tabindex="-1">User ID</th>
+        <th aria-sort="ascending">
+          <span tabindex="-1" role="button">Created Date</span>
+        </th>
+        <th aria-sort="ascending">
+          <span tabindex="-1" role="button">Last Updated Date</span>
+        </th>
+      </tr>
+        {% for user in users %}
+        <tr>
+          <td tabindex="-1"><input tabindex="0" value="{{ user.user_id }}" name="remove_user_ids" type="checkbox"></td>
+          <td class="w3-left" tabindex="-1">{{ user.user_name }}</td>
+          <td tabindex="-1">{{ user.user_id }}</td>
+          <td tabindex="-1">{{ user.created_at }}</td>
+          <td tabindex="-1">{{ user.updated_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>
+          {% if page == 1 %} Previous {% else %}
+          <a href="/groups/{{ group.group_id }}?page={{ page - 1 }}&users_per_page={{ users_per_page }}"
+          >Previous</a
+          >
+          {% endif %} | {% if page == num_pages %} Next {% else %}
+          <a href="/groups/{{ group.group_id }}?page={{ page + 1 }}&users_per_page={{ users_per_page }}"
+          >Next</a
+          >
+          {% endif %}
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
 
+  <div class="w3-padding">
+    <div class="twelve columns">
+      <div class="eight columns"></div>
+      <div class="two columns">
+        <input onclick="removeMembers()" class="w3-button" value="remove members" />
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+    function removeMembers() {
+        /// Create new form
+        let form = document.createElement('form');
+        document.body.appendChild(form);
+        let values = [];
+        let checkboxes = document.querySelectorAll('input[name="remove_user_ids"]:checked');
+        for (let i = 0; i < checkboxes.length; i++) {
+            values.push(checkboxes[i].value);
+        }
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'remove_user_ids';
+        input.value = values.join(',');
+        form.appendChild(input);
+        form.action = "/users/group/{{ group.group_id }}";
+        form.method = "post";
+        form.submit();
+    }
+</script>
 {% endblock content %}
 
 {% block extend_head %}
