@@ -113,6 +113,24 @@ impl Mutation {
         Ok(res)
     }
 
+    /// User Groups: Add Users from Group
+    /// TODO: Improve this function
+    pub async fn add_users_into_group(
+        db: &DbConn,
+        group_id: i32,
+        user_ids: Vec<i32>,
+    ) -> Result<(), DbErr> {
+        for user_id in user_ids {
+            let user = groups_users::ActiveModel {
+                group_id: Set(group_id),
+                user_id: Set(user_id),
+                ..Default::default()
+            };
+            user.insert(db).await?;
+        }
+        Ok(())
+    }
+
     /// Spaces: Create Space
     pub async fn create_space(
         db: &DbConn,

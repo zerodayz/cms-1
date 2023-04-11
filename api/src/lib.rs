@@ -59,7 +59,8 @@ async fn start() -> anyhow::Result<()> {
         .route("/users/:id", get(edit_user).post(update_user))
         .route("/users/new", get(new_user))
         .route("/users/delete/:id", post(delete_user))
-        .route("/users/group/:id", post(remove_user_from_group))
+        .route("/users/add/group/:id", post(add_user_into_group))
+        .route("/users/remove/group/:id", post(remove_user_from_group))
         .route("/groups", get(list_groups).post(create_group))
         .route("/groups/:id", get(edit_group).post(update_group))
         .route("/groups/new", get(new_group))
@@ -291,26 +292,58 @@ async fn delete_user(
     Ok(post_response(&mut cookies, data, path))
 }
 
-#[debug_handler]
 async fn remove_user_from_group(
     state: State<AppState>,
     mut cookies: Cookies,
     Path(id): Path<i32>,
-    form: Form<groups_users::RemoveMembersForm>,
+    form: Form<groups_users::MembersForm>,
 ) -> Result<PostResponse, (StatusCode, String)> {
     let form = form.0;
     /// Create Vec<i32> from comma separated string
-    let remove_user_ids: Vec<i32> = form
-        .remove_user_ids
+    let user_ids: Vec<i32> = form
+        .user_ids
         .split(',')
         .map(|s| s.parse::<i32>().unwrap())
         .collect();
 
-    MutationCore::remove_users_from_group(&state.conn, id, remove_user_ids)
+    MutationCore::remove_users_from_group(&state.conn, id, user_ids)
         .await
         .expect("could not remove users from group");
 
-    let message = format!("Users {} successfully removed", form.remove_user_ids);
+    let message = format!("Users {} successfully removed", form.user_ids);
+    let data = Data {
+        token: None,
+        flash: Option::from(FlashData {
+            kind: "Success".to_owned(),
+            message,
+        })
+    };
+    let path = "/groups/";
+    let new_path = format!("{}{}", path, id);
+
+    Ok(post_response(&mut cookies, data, new_path))
+}
+
+
+async fn add_user_into_group(
+    state: State<AppState>,
+    mut cookies: Cookies,
+    Path(id): Path<i32>,
+    form: Form<groups_users::MembersForm>,
+) -> Result<PostResponse, (StatusCode, String)> {
+    let form = form.0;
+    /// Create Vec<i32> from comma separated string
+    let user_ids: Vec<i32> = form
+        .user_ids
+        .split(',')
+        .map(|s| s.parse::<i32>().unwrap())
+        .collect();
+
+    MutationCore::add_users_into_group(&state.conn, id, user_ids)
+        .await
+        .expect("could not remove users from group");
+
+    let message = format!("Users {} successfully added", form.user_ids);
     let data = Data {
         token: None,
         flash: Option::from(FlashData {

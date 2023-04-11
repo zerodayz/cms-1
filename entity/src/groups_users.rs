@@ -14,8 +14,8 @@ pub struct Model {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct RemoveMembersForm {
-    pub remove_user_ids: String,
+pub struct MembersForm {
+    pub user_ids: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

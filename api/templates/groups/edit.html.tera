@@ -38,6 +38,29 @@
 <div class="w3-padding">
   <h2 tabindex="0">Group Membership</h2>
 </div>
+<div class="w3-padding">
+  <h3 tabindex="0">Add Members</h3>
+</div>
+<form action="/users/add/group/{{ group.group_id }}" method="post">
+  <div class="w3-padding">
+    <label for="user_ids">Members:</label>
+    <input
+            type="text"
+            aria-label="Comma separated values. For example: 1,4"
+            placeholder="enter members 1,4"
+            name="user_ids"
+            id="user_ids"
+            class="u-full-width"
+    />
+    <br><small>Comma separated values.</small>
+    <div class="two columns">
+      <input type="submit" class="w3-button" value="add members" />
+    </div>
+  </div>
+</form>
+<div class="w3-padding">
+  <h3 tabindex="0">Remove Members</h3>
+</div>
 <form id="user-group-form" method="post">
   <div class="table-wrap">
     <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data w3-table-all">
@@ -55,7 +78,7 @@
       </tr>
         {% for user in users %}
         <tr>
-          <td tabindex="-1"><input tabindex="0" value="{{ user.user_id }}" name="remove_user_ids" type="checkbox"></td>
+          <td tabindex="-1"><input tabindex="0" value="{{ user.user_id }}" name="user_ids" type="checkbox"></td>
           <td class="w3-left" tabindex="-1">{{ user.user_name }}</td>
           <td tabindex="-1">{{ user.user_id }}</td>
           <td tabindex="-1">{{ user.created_at }}</td>
@@ -100,16 +123,16 @@
         let form = document.createElement('form');
         document.body.appendChild(form);
         let values = [];
-        let checkboxes = document.querySelectorAll('input[name="remove_user_ids"]:checked');
+        let checkboxes = document.querySelectorAll('input[name="user_ids"]:checked');
         for (let i = 0; i < checkboxes.length; i++) {
             values.push(checkboxes[i].value);
         }
         let input = document.createElement('input');
         input.type = 'hidden';
-        input.name = 'remove_user_ids';
+        input.name = 'user_ids';
         input.value = values.join(',');
         form.appendChild(input);
-        form.action = "/users/group/{{ group.group_id }}";
+        form.action = "/users/remove/group/{{ group.group_id }}";
         form.method = "post";
         form.submit();
     }
