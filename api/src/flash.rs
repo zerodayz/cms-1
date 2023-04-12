@@ -137,7 +137,12 @@ pub fn logout_response<T>(cookies: &mut Cookies, data: T, path: &'static str) ->
     where
         T: Serialize,
 {
-    cookies.remove(Cookie::named(AXUM_SESSION_NAME));
+    let mut cookie = Cookie::named(AXUM_SESSION_NAME);
+    let mut now = OffsetDateTime::now_utc();
+    cookie.set_expires(now);
+    cookie.set_path("/");
+    cookie.set_http_only(true);
+    cookies.add(cookie);
 
     let mut header = HeaderMap::new();
     header.insert(header::LOCATION, HeaderValue::from_static(path));
