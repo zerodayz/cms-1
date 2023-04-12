@@ -156,6 +156,25 @@ impl Query {
         paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
     }
 
+    /// Spaces: Find Spaces in Page owned by User
+    pub async fn find_spaces_in_page_owned_by_user(
+        db: &DbConn,
+        user_id: i32,
+        page: u64,
+        spaces_per_page: u64,
+    ) -> Result<(Vec<spaces::Model>, u64), DbErr> {
+        // Setup paginator
+        let paginator = Space::find()
+            .filter(
+                spaces::Column::OwnerId
+                    .eq(user_id))
+            .order_by_asc(spaces::Column::SpaceId)
+            .paginate(db, spaces_per_page);
+        let num_pages = paginator.num_pages().await?;
+
+        // Fetch paginated spaces
+        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+    }
 
     /// Space Groups: Get Space Groups
     pub async fn find_space_groups_in_page(
@@ -198,6 +217,26 @@ impl Query {
     ) -> Result<(Vec<posts::Model>, u64), DbErr> {
         // Setup paginator
         let paginator = Post::find()
+            .order_by_asc(posts::Column::PostId)
+            .paginate(db, posts_per_page);
+        let num_pages = paginator.num_pages().await?;
+
+        // Fetch paginated posts
+        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+    }
+
+    /// Posts: Find Posts in Page owned by User
+    pub async fn find_posts_in_page_owned_by_user(
+        db: &DbConn,
+        user_id: i32,
+        page: u64,
+        posts_per_page: u64,
+    ) -> Result<(Vec<posts::Model>, u64), DbErr> {
+        // Setup paginator
+        let paginator = Post::find()
+            .filter(
+                posts::Column::OwnerId
+                    .eq(user_id))
             .order_by_asc(posts::Column::PostId)
             .paginate(db, posts_per_page);
         let num_pages = paginator.num_pages().await?;

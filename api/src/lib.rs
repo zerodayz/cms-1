@@ -697,7 +697,7 @@ async fn list_spaces(
     let page = params.page.unwrap_or(1);
     let spaces_per_page = params.items_per_page.unwrap_or(5);
 
-    let (spaces, num_pages) = QueryCore::find_spaces_in_page(&state.conn, page, spaces_per_page)
+    let (spaces, num_pages) = QueryCore::find_spaces_in_page_owned_by_user(&state.conn, logged_in_user.user_id, page, spaces_per_page)
         .await
         .expect("Cannot find spaces in page");
 
@@ -917,7 +917,7 @@ async fn list_posts(
     let page = params.page.unwrap_or(1);
     let posts_per_page = params.items_per_page.unwrap_or(5);
 
-    let (posts, num_pages) = QueryCore::find_posts_in_page(&state.conn, page, posts_per_page)
+    let (posts, num_pages) = QueryCore::find_posts_in_page_owned_by_user(&state.conn, logged_in_user.user_id, page, posts_per_page)
         .await
         .expect("Cannot find posts in page");
 
