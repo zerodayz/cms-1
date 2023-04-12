@@ -114,7 +114,6 @@ impl Mutation {
     }
 
     /// User Groups: Add Users from Group
-    /// TODO: Improve this function
     pub async fn add_users_into_group(
         db: &DbConn,
         group_id: i32,
@@ -179,6 +178,47 @@ impl Mutation {
             .await
     }
 
+
+    /// Space Groups: Remove Groups from Space
+    pub async fn remove_groups_from_space(
+        db: &DbConn,
+        space_id: i32,
+        group_ids: Vec<i32>,
+    ) -> Result<DeleteResult, DbErr> {
+        let res: DeleteResult = SpaceGroup::delete_many()
+            .filter(
+                groups_spaces::Column::SpaceId.eq(space_id)
+                    .and(groups_spaces::Column::GroupId.is_in(group_ids)),
+            )
+            .exec(db)
+            .await?;
+        Ok(res)
+    }
+
+    /// Space Groups: Add Group into Space
+    pub async fn add_groups_into_space(
+        db: &DbConn,
+        space_id: i32,
+        group_ids: Vec<i32>,
+    ) -> Result<(), DbErr> {
+        let role: roles::ActiveModel = Role::find()
+            .filter(roles::Column::RoleName.eq("viewer"))
+            .one(db)
+            .await?
+            .ok_or(DbErr::Custom("Cannot find role.".to_owned()))
+            .map(Into::into)?;
+
+        for group_id in group_ids {
+            let group_spaces = groups_spaces::ActiveModel {
+                group_id: Set(group_id),
+                space_id: Set(space_id),
+                role_id: Set(role.role_id.clone().unwrap()),
+                ..Default::default()
+            };
+            group_spaces.insert(db).await?;
+        }
+        Ok(())
+    }
 
     /// Groups: Create Group
     pub async fn create_group(

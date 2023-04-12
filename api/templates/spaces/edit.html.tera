@@ -63,4 +63,111 @@
     </form>
   </div>
 </div>
+
+<div class="w3-padding">
+  <h2 tabindex="0">Space Permissions</h2>
+</div>
+<div class="w3-padding">
+  <h3 tabindex="0">Add Members</h3>
+</div>
+<form action="/groups/add/space/{{ space.space_id }}" method="post">
+  <div class="w3-padding">
+    <label for="group_ids">Members:</label>
+    <input
+            type="text"
+            aria-label="Comma separated values. For example: 1,4"
+            placeholder="enter group ids for members 1,4"
+            name="group_ids"
+            id="group_ids"
+            class="u-full-width"
+    />
+    <br><small>Comma separated values.</small>
+    <div class="two columns">
+      <input type="submit" class="w3-button" value="add members" />
+    </div>
+  </div>
+</form>
+<div class="w3-padding">
+  <h3 tabindex="0">Remove Members</h3>
+</div>
+<form id="user-group-form" method="post">
+  <div class="table-wrap">
+    <table id="ex2-grid" role="grid" aria-labelledby="grid2Label" class="data w3-table-all">
+      <tbody class="table-navigation">
+      <tr>
+        <th tabindex="-1">Actions</th>
+        <th class="w3-left" tabindex="-1">Group Name</th>
+        <th tabindex="-1">Group ID</th>
+        <th aria-sort="ascending">
+          <span tabindex="-1" role="button">Created Date</span>
+        </th>
+        <th aria-sort="ascending">
+          <span tabindex="-1" role="button">Last Updated Date</span>
+        </th>
+      </tr>
+      {% for group in groups %}
+      <tr>
+        <td tabindex="-1"><input tabindex="0" value="{{ group.group_id }}" name="group_ids" type="checkbox"></td>
+        <td class="w3-left" tabindex="-1">{{ group.group_name }}</td>
+        <td tabindex="-1">{{ group.group_id }}</td>
+        <td tabindex="-1">{{ group.created_at }}</td>
+        <td tabindex="-1">{{ group.updated_at }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+      <tfoot>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>
+          {% if page == 1 %} Previous {% else %}
+          <a href="/spaces/{{ space.space_id }}?page={{ page - 1 }}&groups_per_page={{ groups_per_page }}"
+          >Previous</a
+          >
+          {% endif %} | {% if page == num_pages %} Next {% else %}
+          <a href="/spaces/{{ space.space_id }}?page={{ page + 1 }}&groups_per_page={{ groups_per_page }}"
+          >Next</a
+          >
+          {% endif %}
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="w3-padding">
+    <div class="twelve columns">
+      <div class="eight columns"></div>
+      <div class="two columns">
+        <input onclick="removeViewers()" class="w3-button" value="remove members" />
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+  function removeViewers() {
+    /// Create new form
+    let form = document.createElement('form');
+    document.body.appendChild(form);
+    let values = [];
+    let checkboxes = document.querySelectorAll('input[name="group_ids"]:checked');
+    for (let i = 0; i < checkboxes.length; i++) {
+      values.push(checkboxes[i].value);
+    }
+    let input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'group_ids';
+    input.value = values.join(',');
+    form.appendChild(input);
+    form.action = "/groups/remove/space/{{ space.space_id }}";
+    form.method = "post";
+    form.submit();
+  }
+</script>
 {% endblock content %}
+
+{% block extend_head %}
+<link rel="stylesheet" href="/static/css/table.css">
+{% endblock extend_head %}

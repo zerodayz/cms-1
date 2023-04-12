@@ -65,6 +65,8 @@ async fn start() -> anyhow::Result<()> {
         .route("/groups/:id", get(edit_group).post(update_group))
         .route("/groups/new", get(new_group))
         .route("/groups/delete/:id", post(delete_group))
+        .route("/groups/add/space/:id", post(add_group_into_space))
+        .route("/groups/remove/space/:id", post(remove_group_from_space))
         .route("/spaces", get(list_spaces).post(create_space))
         .route("/spaces/:id", get(edit_space).post(update_space))
         .route("/spaces/new", get(new_space))
@@ -596,6 +598,73 @@ async fn delete_group(
     Ok(post_response(&mut cookies, data, path))
 }
 
+
+async fn remove_group_from_space(
+    state: State<AppState>,
+    mut cookies: Cookies,
+    Path(id): Path<i32>,
+    form: Form<groups_spaces::MembersForm>,
+) -> Result<PostResponse, (StatusCode, String)> {
+    let form = form.0;
+    /// Create Vec<i32> from comma separated string
+    let group_ids: Vec<i32> = form
+        .group_ids
+        .split(',')
+        .map(|s| s.parse::<i32>().unwrap())
+        .collect();
+
+    MutationCore::remove_groups_from_space(&state.conn, id, group_ids)
+        .await
+        .expect("could not remove groups from space");
+
+    let message = format!("Groups {} successfully removed", form.group_ids);
+    let data = Data {
+        token: None,
+        flash: Option::from(FlashData {
+            kind: "Success".to_owned(),
+            message,
+        })
+    };
+    let path = "/spaces/";
+    let new_path = format!("{}{}", path, id);
+
+    Ok(post_response(&mut cookies, data, new_path))
+}
+
+
+async fn add_group_into_space(
+    state: State<AppState>,
+    mut cookies: Cookies,
+    Path(id): Path<i32>,
+    form: Form<groups_spaces::MembersForm>,
+) -> Result<PostResponse, (StatusCode, String)> {
+    let form = form.0;
+    /// Create Vec<i32> from comma separated string
+    let group_ids: Vec<i32> = form
+        .group_ids
+        .split(',')
+        .map(|s| s.parse::<i32>().unwrap())
+        .collect();
+
+    MutationCore::add_groups_into_space(&state.conn, id, group_ids)
+        .await
+        .expect("could not remove users from group");
+
+    let message = format!("Groups {} successfully added", form.group_ids);
+    let data = Data {
+        token: None,
+        flash: Option::from(FlashData {
+            kind: "Success".to_owned(),
+            message,
+        })
+    };
+    let path = "/spaces/";
+    let new_path = format!("{}{}", path, id);
+
+    Ok(post_response(&mut cookies, data, new_path))
+}
+
+
 async fn create_group(
     state: State<AppState>,
     mut cookies: Cookies,
@@ -670,17 +739,34 @@ async fn new_space(
 
 async fn edit_space(
     state: State<AppState>,
+    mut cookies: Cookies,
+    Query(params): Query<Params>,
     Path(id): Path<i32>,
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let page = params.page.unwrap_or(1);
+    let groups_per_page = params.items_per_page.unwrap_or(5);
+
     let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, id)
         .await
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {id}"));
 
+    let (groups, num_pages) = QueryCore::find_space_groups_in_page(&state.conn, id, page, groups_per_page)
+        .await
+        .expect("Cannot find groups in page");
+
     let mut ctx = tera::Context::new();
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("space", &space);
+    ctx.insert("groups", &groups);
+    ctx.insert("page", &page);
+    ctx.insert("groups_per_page", &groups_per_page);
+    ctx.insert("num_pages", &num_pages);
+
+    if let Some(value) = get_flash_cookie(&cookies) {
+        ctx.insert("flash", &value);
+    }
 
     let body = state
         .templates

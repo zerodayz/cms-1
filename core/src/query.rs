@@ -157,6 +157,34 @@ impl Query {
     }
 
 
+    /// Space Groups: Get Space Groups
+    pub async fn find_space_groups_in_page(
+        db: &DbConn,
+        id: i32,
+        page: u64,
+        groups_per_page: u64,
+    ) -> Result<(Vec<groups::Model>, u64), DbErr> {
+        /// Get all space groups
+        let group_spaces: Vec<groups_spaces::Model> = SpaceGroup::find()
+            .filter(groups_spaces::Column::SpaceId.eq(id))
+            .all(db)
+            .await?;
+
+        /// Get all groups
+        let paginator = Group::find()
+            .filter(
+                groups::Column::GroupId
+                    .is_in(group_spaces.iter().map(|u| u.group_id)),
+            )
+            .order_by_asc(groups::Column::GroupId)
+            .paginate(db, groups_per_page);
+        let num_pages = paginator.num_pages().await?;
+
+        // Fetch paginated users
+        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+    }
+
+
     /// Posts
     pub async fn find_post_by_id(db: &DbConn, id: i32) -> Result<Option<posts::Model>, DbErr> {
         Post::find_by_id(id).one(db).await
