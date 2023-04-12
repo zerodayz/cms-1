@@ -2,6 +2,7 @@
 <div class="heading w3-padding">
   <h1 tabindex="0" id="page-title">Edit User</h1>
 </div>
+{% if user %}
 <div class="w3-padding">
   <form action="/users/{{ user.user_id }}" method="post">
     <div class="w3-padding-16">
@@ -44,4 +45,5 @@
     </form>
   </div>
 </div>
+{% endif %}
 {% endblock content %}

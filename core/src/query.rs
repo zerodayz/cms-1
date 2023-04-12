@@ -204,6 +204,40 @@ impl Query {
     }
 
 
+    /// Space Groups: Get Users in Space Groups
+    pub async fn find_users_by_space_id(
+        db: &DbConn,
+        id: i32,
+    ) -> Result<Vec<i32>, DbErr> {
+        /// Get all space groups
+        let group_spaces: Vec<groups_spaces::Model> = SpaceGroup::find()
+            .filter(groups_spaces::Column::SpaceId.eq(id))
+            .all(db)
+            .await?;
+
+        /// Get all groups
+        let groups: Vec<groups::Model> = Group::find()
+            .filter(
+                groups::Column::GroupId
+                    .is_in(group_spaces.iter().map(|u| u.group_id)),
+            )
+            .order_by_asc(groups::Column::GroupId)
+            .all(db)
+            .await?;
+
+        /// Get all users in groups
+        let mut users: Vec<i32> = Vec::new();
+        for group in groups {
+            let group_users: Vec<groups_users::Model> = UserGroup::find()
+                .filter(groups_users::Column::GroupId.eq(group.group_id))
+                .all(db)
+                .await?;
+            users.extend(group_users.iter().map(|u| u.user_id));
+        }
+        Ok(users)
+    }
+
+
     /// Posts
     pub async fn find_post_by_id(db: &DbConn, id: i32) -> Result<Option<posts::Model>, DbErr> {
         Post::find_by_id(id).one(db).await

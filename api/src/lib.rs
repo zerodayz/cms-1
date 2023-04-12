@@ -55,10 +55,10 @@ async fn start() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/users", get(list_users).post(create_user))
-        .route("/users/logout", get(logout_user))
         .route("/users/:id", get(edit_user).post(update_user))
         .route("/users/new", get(new_user))
         .route("/users/delete/:id", post(delete_user))
+        .route("/users/logout", get(logout_user))
         .route("/users/add/group/:id", post(add_user_into_group))
         .route("/users/remove/group/:id", post(remove_user_from_group))
         .route("/groups", get(list_groups).post(create_group))
@@ -231,15 +231,42 @@ async fn new_user(
 
 async fn edit_user(
     state: State<AppState>,
+    mut cookies: Cookies,
     Extension(logged_in_user): Extension<UserModel>,
     Path(id): Path<i32>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let mut ctx = tera::Context::new();
+
+    if logged_in_user.user_id != id && logged_in_user.user_name != "admin" {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to edit this user.".to_string(),
+            }),
+        };
+
+        add_cookies(&mut cookies, data);
+
+        ctx.insert("logged_in_user", &logged_in_user);
+
+        if let Some(value) = get_flash_cookie(&cookies) {
+            ctx.insert("flash", &value);
+        }
+
+        let body = state
+            .templates
+            .render("users/edit.html.tera", &ctx)
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+        return Ok(Html(body))
+    }
+
     let user: users::Model = QueryCore::find_user_by_id(&state.conn, id)
         .await
         .expect("could not find user")
         .unwrap_or_else(|| panic!("could not find user with id {id}"));
 
-    let mut ctx = tera::Context::new();
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("user", &user);
 
@@ -255,8 +282,21 @@ async fn update_user(
     state: State<AppState>,
     Path(id): Path<i32>,
     mut cookies: Cookies,
+    Extension(logged_in_user): Extension<UserModel>,
     form: Form<users::Model>,
 ) -> Result<PostResponse, (StatusCode, String)> {
+    if logged_in_user.user_id != id && logged_in_user.user_name != "admin" {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_owned(),
+                message: "You are not allowed to edit this user.".to_owned(),
+            }),
+        };
+        let path = "/users".to_string();
+        return Ok(post_response(&mut cookies, data, path))
+    }
+
     let form = form.0;
 
     MutationCore::update_user_by_id(&state.conn, id, form)
@@ -523,19 +563,46 @@ async fn edit_group(
     Path(id): Path<i32>,
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
-    let page = params.page.unwrap_or(1);
-    let users_per_page = params.items_per_page.unwrap_or(5);
+    let mut ctx = tera::Context::new();
 
     let group: groups::Model = QueryCore::find_group_by_id(&state.conn, id)
         .await
         .expect("could not find group")
         .unwrap_or_else(|| panic!("could not find group with id {id}"));
 
+    if group.owner_id != logged_in_user.user_id {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to edit this group.".to_string(),
+            }),
+        };
+
+        add_cookies(&mut cookies, data);
+
+        ctx.insert("logged_in_user", &logged_in_user);
+
+        if let Some(value) = get_flash_cookie(&cookies) {
+            ctx.insert("flash", &value);
+        }
+
+        let body = state
+            .templates
+            .render("groups/edit.html.tera", &ctx)
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+        return Ok(Html(body))
+    }
+
+    let page = params.page.unwrap_or(1);
+    let users_per_page = params.items_per_page.unwrap_or(5);
+
+
     let (users, num_pages) = QueryCore::find_group_users_in_page(&state.conn, id, page, users_per_page)
         .await
         .expect("Cannot find groups in page");
 
-    let mut ctx = tera::Context::new();
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("group", &group);
     ctx.insert("users", &users);
@@ -744,13 +811,40 @@ async fn edit_space(
     Path(id): Path<i32>,
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
-    let page = params.page.unwrap_or(1);
-    let groups_per_page = params.items_per_page.unwrap_or(5);
+    let mut ctx = tera::Context::new();
 
     let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, id)
         .await
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {id}"));
+
+    if space.owner_id != Some(logged_in_user.user_id) {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to view the page.".to_string(),
+            }),
+        };
+
+        add_cookies(&mut cookies, data);
+
+        ctx.insert("logged_in_user", &logged_in_user);
+
+        if let Some(value) = get_flash_cookie(&cookies) {
+            ctx.insert("flash", &value);
+        }
+
+        let body = state
+            .templates
+            .render("spaces/view.html.tera", &ctx)
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+        return Ok(Html(body))
+    }
+
+    let page = params.page.unwrap_or(1);
+    let groups_per_page = params.items_per_page.unwrap_or(5);
 
     let (groups, num_pages) = QueryCore::find_space_groups_in_page(&state.conn, id, page, groups_per_page)
         .await
@@ -791,7 +885,11 @@ async fn view_space(
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {id}"));
 
-    if !space.is_public && space.owner_id != Some(logged_in_user.user_id) {
+    let users: Vec<i32> = QueryCore::find_users_by_space_id(&state.conn, id)
+        .await
+        .expect("Cannot find user in space groups");
+
+    if !space.is_public && space.owner_id != Some(logged_in_user.user_id) && !users.contains(&logged_in_user.user_id) {
         let data = Data {
             token: None,
             flash: Option::from(FlashData {
@@ -846,8 +944,28 @@ async fn update_space(
     state: State<AppState>,
     Path(id): Path<i32>,
     mut cookies: Cookies,
+    Extension(logged_in_user): Extension<UserModel>,
     form: Form<spaces::Model>,
 ) -> Result<PostResponse, (StatusCode, String)> {
+
+    let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, id)
+        .await
+        .expect("could not find space")
+        .unwrap_or_else(|| panic!("could not find space with id {id}"));
+
+    if space.owner_id != Some(logged_in_user.user_id) {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to view the page.".to_string(),
+            }),
+        };
+
+        let path = "/spaces".to_string();
+        return Ok(post_response(&mut cookies, data, path))
+    }
+
     let form = form.0;
 
     MutationCore::update_space_by_id(&state.conn, id, form)
@@ -997,7 +1115,11 @@ async fn view_post(
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {space_id}"));
 
-    if (!space.is_public || !post.post_published) && space.owner_id != Some(logged_in_user.user_id) {
+    let users: Vec<i32> = QueryCore::find_users_by_space_id(&state.conn, space_id)
+        .await
+        .expect("Cannot find user in space groups");
+
+    if (!space.is_public || !post.post_published) && space.owner_id != Some(logged_in_user.user_id) && !users.contains(&logged_in_user.user_id){
         let data = Data {
             token: None,
             flash: Option::from(FlashData {
@@ -1073,7 +1195,11 @@ async fn raw_post(
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {space_id}"));
 
-    if (!space.is_public || !post.post_published) && space.owner_id != Some(logged_in_user.user_id) {
+    let users: Vec<i32> = QueryCore::find_users_by_space_id(&state.conn, space_id)
+        .await
+        .expect("Cannot find user in space groups");
+
+    if (!space.is_public || !post.post_published) && space.owner_id != Some(logged_in_user.user_id) && !users.contains(&logged_in_user.user_id) {
         return Err((StatusCode::FORBIDDEN, "You are not allowed to view the page."))
     }
 
@@ -1091,15 +1217,48 @@ async fn raw_post(
 
 async fn edit_post(
     state: State<AppState>,
+    mut cookies: Cookies,
     Path(id): Path<i32>,
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let mut ctx = tera::Context::new();
+
     let post: posts::Model = QueryCore::find_post_by_id(&state.conn, id)
         .await
         .expect("could not find post")
         .unwrap_or_else(|| panic!("could not find post with id {id}"));
 
-    let mut ctx = tera::Context::new();
+    let space_id = post.space_id;
+    let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, post.space_id)
+        .await
+        .expect("could not find space")
+        .unwrap_or_else(|| panic!("could not find space with id {space_id}"));
+
+    if !space.is_public && space.owner_id != Some(logged_in_user.user_id) {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to view the page.".to_string(),
+            }),
+        };
+
+        add_cookies(&mut cookies, data);
+
+        ctx.insert("logged_in_user", &logged_in_user);
+
+        if let Some(value) = get_flash_cookie(&cookies) {
+            ctx.insert("flash", &value);
+        }
+
+        let body = state
+            .templates
+            .render("posts/view.html.tera", &ctx)
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+        return Ok(Html(body))
+    }
+
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("post", &post);
 
@@ -1115,8 +1274,34 @@ async fn update_post(
     state: State<AppState>,
     Path(id): Path<i32>,
     mut cookies: Cookies,
+    Extension(logged_in_user): Extension<UserModel>,
     form: Form<posts::Model>,
 ) -> Result<PostResponse, (StatusCode, String)> {
+
+    let post: posts::Model = QueryCore::find_post_by_id(&state.conn, id)
+        .await
+        .expect("could not find post")
+        .unwrap_or_else(|| panic!("could not find post with id {id}"));
+
+    let space_id = post.space_id;
+    let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, post.space_id)
+        .await
+        .expect("could not find space")
+        .unwrap_or_else(|| panic!("could not find space with id {space_id}"));
+
+    if space.owner_id != Some(logged_in_user.user_id) {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to view the page.".to_string(),
+            }),
+        };
+
+        let path = "/posts".to_string();
+        return Ok(post_response(&mut cookies, data, path))
+    }
+
     let form = form.0;
 
     MutationCore::update_post_by_id(&state.conn, id, form)

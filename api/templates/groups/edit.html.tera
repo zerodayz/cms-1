@@ -2,7 +2,7 @@
 <div class="heading w3-padding">
   <h1 tabindex="0" id="page-title">Edit Group</h1>
 </div>
-
+{% if group %}
 <div class="w3-padding">
   <h2 tabindex="0">Group Configuration</h2>
   <form action="/groups/{{ group.group_id }}" method="post">
@@ -137,6 +137,7 @@
         form.submit();
     }
 </script>
+{% endif %}
 {% endblock content %}
 
 {% block extend_head %}
