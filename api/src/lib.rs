@@ -626,8 +626,28 @@ async fn update_group(
     state: State<AppState>,
     Path(id): Path<i32>,
     mut cookies: Cookies,
+    Extension(logged_in_user): Extension<UserModel>,
     form: Form<groups::Model>,
 ) -> Result<PostResponse, (StatusCode, String)> {
+
+    let group: groups::Model = QueryCore::find_group_by_id(&state.conn, id)
+        .await
+        .expect("could not find group")
+        .unwrap_or_else(|| panic!("could not find group with id {id}"));
+
+    if group.owner_id != logged_in_user.user_id {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to edit this group.".to_string(),
+            }),
+        };
+
+        let path = "/groups".to_string();
+        return Ok(post_response(&mut cookies, data, path))
+    }
+
     let form = form.0;
 
     MutationCore::update_group_by_id(&state.conn, id, form)
