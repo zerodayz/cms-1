@@ -38,13 +38,29 @@ fn format_date(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value>
     let now = Utc::now();
     let date = now.signed_duration_since(parsed_date);
     if date.num_days() > 0 {
-        Ok(to_value(format!("{} days ago", date.num_days())).unwrap())
+        if date.num_days() == 1 {
+            Ok(to_value(format!("{} day ago", date.num_days())).unwrap())
+        } else {
+            Ok(to_value(format!("{} days ago", date.num_days())).unwrap())
+        }
     } else if date.num_hours() > 0 {
-        Ok(to_value(format!("{} hours ago", date.num_hours())).unwrap())
+        if date.num_hours() == 1 {
+            Ok(to_value(format!("{} hour ago", date.num_hours())).unwrap())
+        } else {
+            Ok(to_value(format!("{} hours ago", date.num_hours())).unwrap())
+        }
     } else if date.num_minutes() > 0 {
-        Ok(to_value(format!("{} minutes ago", date.num_minutes())).unwrap())
+        if date.num_minutes() == 1 {
+            Ok(to_value(format!("{} minute ago", date.num_minutes())).unwrap())
+        } else {
+            Ok(to_value(format!("{} minutes ago", date.num_minutes())).unwrap())
+        }
     } else {
-        Ok(to_value(format!("{} seconds ago", date.num_seconds())).unwrap())
+        if date.num_seconds() == 1 {
+            Ok(to_value(format!("{} second ago", date.num_seconds())).unwrap())
+        } else {
+            Ok(to_value(format!("{} seconds ago", date.num_seconds())).unwrap())
+        }
     }
 }
 
