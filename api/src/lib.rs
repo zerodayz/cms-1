@@ -605,7 +605,7 @@ async fn edit_group(
         .expect("could not find group")
         .unwrap_or_else(|| panic!("could not find group with id {id}"));
 
-    if group.owner_id != logged_in_user.user_id {
+    if group.owner_id != logged_in_user.user_id && logged_in_user.user_name != "admin" {
         let data = Data {
             token: None,
             flash: Option::from(FlashData {
@@ -873,7 +873,7 @@ async fn edit_space(
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {id}"));
 
-    if space.owner_id != Some(logged_in_user.user_id) {
+    if space.owner_id != Some(logged_in_user.user_id)  && logged_in_user.user_name != "admin"{
         let data = Data {
             token: None,
             flash: Option::from(FlashData {
@@ -1289,7 +1289,7 @@ async fn edit_post(
         .expect("could not find space")
         .unwrap_or_else(|| panic!("could not find space with id {space_id}"));
 
-    if !space.is_public && space.owner_id != Some(logged_in_user.user_id) {
+    if !space.is_public && space.owner_id != Some(logged_in_user.user_id) && logged_in_user.user_name != "admin" {
         let data = Data {
             token: None,
             flash: Option::from(FlashData {
