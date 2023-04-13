@@ -1,7 +1,7 @@
 mod flash;
 
 use axum::{async_trait, extract::{Multipart, FromRequestParts, Form, Path, Query, State, TypedHeader}, headers::{authorization::Bearer, Authorization}, http::{request::Parts, Request, StatusCode}, response::{IntoResponse, Response, Html}, routing::{get, get_service, post}, Json, RequestPartsExt, Router, debug_handler, Server, middleware, Extension, RequestExt};
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation, errors};
 use once_cell::sync::Lazy;
 use csm_core::{
     sea_orm::{Database, DatabaseConnection},
@@ -12,13 +12,14 @@ use entity::*;
 use flash::{guard_response, get_flash_cookie, post_response, add_cookies, PostResponse, get_token_cookie, login_response, LoginResponse, logout_response, LogoutResponse, Data, FlashData, TokenData};
 use migration::{Migrator, MigratorTrait};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, to_value, Value};
 use std::str::FromStr;
 use std::{fmt::Display, env, net::SocketAddr};
+use std::collections::HashMap;
 use axum::body::Body;
 use axum::http::{header, HeaderMap, HeaderValue};
 use axum::response::Redirect;
-use chrono::{Duration, Utc};
+use chrono::{Duration, TimeZone, Utc};
 use tera::Tera;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
@@ -30,6 +31,22 @@ static KEYS: Lazy<Keys> = Lazy::new(|| {
     let secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
     Keys::new(secret.as_bytes())
 });
+
+fn format_date(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value> {
+    let days = value.as_str().unwrap_or_default();
+    let parsed_date = Utc.datetime_from_str(days, "%Y-%m-%dT%H:%M:%SZ").unwrap();
+    let now = Utc::now();
+    let date = now.signed_duration_since(parsed_date);
+    if date.num_days() > 0 {
+        Ok(to_value(format!("{} days ago", date.num_days())).unwrap())
+    } else if date.num_hours() > 0 {
+        Ok(to_value(format!("{} hours ago", date.num_hours())).unwrap())
+    } else if date.num_minutes() > 0 {
+        Ok(to_value(format!("{} minutes ago", date.num_minutes())).unwrap())
+    } else {
+        Ok(to_value(format!("{} seconds ago", date.num_seconds())).unwrap())
+    }
+}
 
 #[tokio::main]
 async fn start() -> anyhow::Result<()> {
@@ -48,8 +65,10 @@ async fn start() -> anyhow::Result<()> {
         .expect("Database connection failed");
     Migrator::up(&conn, None).await.unwrap();
 
-    let templates = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*"))
+    let mut templates = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*"))
         .expect("Tera initialization failed");
+
+    templates.register_filter("format_date", format_date);
 
     let state = AppState { templates, conn };
 

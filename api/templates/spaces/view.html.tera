@@ -32,7 +32,7 @@
             <li role="none">
               <a role="treeitem" href="#{{ post.post_id }}">
                 <span class="label">{{ post.post_title }}</span>
-                <br><small>Last updated at {{ post.updated_at }} by {{ post.owner_id }}</small>
+                <br><small>Last updated at {{ post.updated_at | format_date }} by {{ post.owner_id }}</small>
               </a>
             </li>
             {% endfor %}
