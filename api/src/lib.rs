@@ -222,7 +222,7 @@ async fn list_users(
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
     let page = params.page.unwrap_or(1);
-    let users_per_page = params.items_per_page.unwrap_or(5);
+    let users_per_page = params.items_per_page.unwrap_or(10);
 
     let (users, num_pages) = QueryCore::find_users_in_page(&state.conn, page, users_per_page)
         .await
@@ -549,7 +549,7 @@ async fn list_groups(
     cookies: Cookies,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
     let page = params.page.unwrap_or(1);
-    let groups_per_page = params.items_per_page.unwrap_or(5);
+    let groups_per_page = params.items_per_page.unwrap_or(10);
 
     let (groups, num_pages) = QueryCore::find_groups_in_page(&state.conn, page, groups_per_page)
         .await
@@ -631,7 +631,7 @@ async fn edit_group(
     }
 
     let page = params.page.unwrap_or(1);
-    let users_per_page = params.items_per_page.unwrap_or(5);
+    let users_per_page = params.items_per_page.unwrap_or(10);
 
 
     let (users, num_pages) = QueryCore::find_group_users_in_page(&state.conn, id, page, users_per_page)
@@ -817,7 +817,7 @@ async fn list_spaces(
     cookies: Cookies,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
     let page = params.page.unwrap_or(1);
-    let spaces_per_page = params.items_per_page.unwrap_or(5);
+    let spaces_per_page = params.items_per_page.unwrap_or(10);
 
     let (spaces, num_pages) = QueryCore::find_spaces_in_page_owned_by_user(&state.conn, logged_in_user.user_id, page, spaces_per_page)
         .await
@@ -899,7 +899,7 @@ async fn edit_space(
     }
 
     let page = params.page.unwrap_or(1);
-    let groups_per_page = params.items_per_page.unwrap_or(5);
+    let groups_per_page = params.items_per_page.unwrap_or(10);
 
     let (groups, num_pages) = QueryCore::find_space_groups_in_page(&state.conn, id, page, groups_per_page)
         .await
@@ -1088,7 +1088,7 @@ async fn list_posts(
     Extension(logged_in_user): Extension<UserModel>,
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
     let page = params.page.unwrap_or(1);
-    let posts_per_page = params.items_per_page.unwrap_or(5);
+    let posts_per_page = params.items_per_page.unwrap_or(10);
 
     let (posts, num_pages) = QueryCore::find_posts_in_page_owned_by_user(&state.conn, logged_in_user.user_id, page, posts_per_page)
         .await
