@@ -23,10 +23,10 @@
                         <polygon points="2 1, 12 1, 7 9"></polygon>
                       </svg>
                     </span>
-                    Last 10 Posts
+                    List of {{ posts | length }} Posts
                   </span>
         </a>
-        <ul id="subtree" role="group" aria-label="Last 10 Posts">
+        <ul id="subtree" role="group" aria-label="List of {{ posts | length }} Posts">
           {% if posts %}
             {% for post in posts | slice(end=10) %}
             <li role="none">
@@ -37,6 +37,17 @@
             </li>
             {% endfor %}
           {% endif %}
+            <li role="none">
+              {% if page != 1 %}
+              <a role="treeitem" href="/spaces/{{ space.space_id }}/view?page={{ page - 1 }}&posts_per_page={{ posts_per_page }}"
+              >Previous Page</a
+              >
+              {% endif %} {% if page != num_pages %}
+              <a role="treeitem" href="/spaces/{{ space.space_id }}/view?page={{ page + 1 }}&posts_per_page={{ posts_per_page }}"
+              >Next Page</a
+              >
+              {% endif %}
+            </li>
         </ul>
       </li>
     </ul>

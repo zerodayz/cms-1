@@ -970,7 +970,7 @@ async fn view_space(
     }
 
     let page = params.page.unwrap_or(1);
-    let posts_per_page = params.items_per_page.unwrap_or(5);
+    let posts_per_page = params.items_per_page.unwrap_or(10);
 
     let (posts, num_pages) = QueryCore::find_posts_in_space(&state.conn, id, page, posts_per_page)
         .await
