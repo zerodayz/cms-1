@@ -10,7 +10,11 @@
         <label for="spaces">Space Name:
           <select name="space_id" id="spaces" style="padding: 5px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
             {% for space in spaces %}
-              <option value="{{ space.space_id }}">{{ space.space_name }}</option>
+              {% if space.is_public %}
+                <option value="{{ space.space_id }}">{{ space.space_name }}</option>
+              {% else %}
+                <option value="{{ space.space_id }}">{{ space.space_name }} (Private)</option>
+              {% endif %}
             {% endfor %}
           </select>
         </label>
