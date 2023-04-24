@@ -1324,6 +1324,12 @@ async fn edit_post(
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("post", &post);
 
+    let spaces= QueryCore::find_space_by_owner_id(&state.conn, logged_in_user.user_id)
+        .await
+        .expect("could not find spaces");
+
+    ctx.insert("spaces", &spaces);
+
     let body = state
         .templates
         .render("posts/edit.html.tera", &ctx)
