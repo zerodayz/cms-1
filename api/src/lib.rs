@@ -790,11 +790,12 @@ async fn add_group_into_space(
 async fn create_group(
     state: State<AppState>,
     mut cookies: Cookies,
+    Extension(logged_in_user): Extension<UserModel>,
     form: Form<groups::Model>,
 ) -> Result<PostResponse, (StatusCode, &'static str)> {
     let form = form.0;
 
-    MutationCore::create_group(&state.conn, form)
+    MutationCore::create_group(&state.conn, logged_in_user.user_id, form)
         .await
         .expect("could not insert group");
 

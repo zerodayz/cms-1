@@ -19,18 +19,6 @@
       />
       <br><small>This is how your Group will be named.</small>
     </div>
-    <div class="w3-padding-16">
-      <label for="owner_id">Owner ID:</label>
-      <input
-              type="number"
-              placeholder="enter owner id"
-              name="owner_id"
-              id="owner_id"
-              value=""
-              class="u-full-width"
-      />
-      <br><small>Enter the owner ID of the Group.</small>
-    </div>
     <div class="twelve columns">
       <div class="two columns">
         <a href="/groups">
