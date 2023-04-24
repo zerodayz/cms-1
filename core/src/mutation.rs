@@ -133,11 +133,12 @@ impl Mutation {
     /// Spaces: Create Space
     pub async fn create_space(
         db: &DbConn,
+        logged_user: i32,
         form_data: spaces::Model,
     ) -> Result<spaces::ActiveModel, DbErr> {
         spaces::ActiveModel {
             space_name: Set(form_data.space_name.to_owned()),
-            owner_id: Set(form_data.owner_id.to_owned()),
+            owner_id: Set(Option::from(logged_user)),
             is_public: Set(form_data.is_public),
             ..Default::default()
         }
@@ -169,8 +170,8 @@ impl Mutation {
         spaces::ActiveModel {
             space_id: space.space_id,
             space_name: Set(form_data.space_name.to_owned()),
-            owner_id: Set(form_data.owner_id.to_owned()),
             is_public: Set(form_data.is_public),
+            owner_id: space.owner_id,
             created_at: space.created_at,
             updated_at: space.updated_at,
         }

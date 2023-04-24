@@ -1061,11 +1061,12 @@ async fn delete_space(
 async fn create_space(
     state: State<AppState>,
     mut cookies: Cookies,
+    Extension(logged_in_user): Extension<UserModel>,
     form: Form<spaces::Model>,
 ) -> Result<PostResponse, (StatusCode, &'static str)> {
     let form = form.0;
 
-    MutationCore::create_space(&state.conn, form)
+    MutationCore::create_space(&state.conn, logged_in_user.user_id, form)
         .await
         .expect("could not insert space");
 

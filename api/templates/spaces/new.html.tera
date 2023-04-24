@@ -31,18 +31,6 @@
       <br><small>Check this box if you want your Space to be public.</small>
       </label>
     </div>
-    <div class="w3-padding-16">
-      <label for="owner_id">Owner ID:</label>
-      <input
-              type="number"
-              placeholder="enter owner id"
-              name="owner_id"
-              id="owner_id"
-              value=""
-              class="u-full-width"
-      />
-      <br><small>Enter the owner ID of the Space.</small>
-    </div>
     <div class="twelve columns">
       <div class="two columns">
         <a href="/spaces">

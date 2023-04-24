@@ -10,6 +10,7 @@ pub struct Model {
     #[serde(skip_deserializing)]
     pub space_id: i32,
     pub space_name: String,
+    #[serde(skip_deserializing)]
     pub owner_id: Option<i32>,
     #[sea_orm(default_value = "false")]
     #[serde(default="bool::default")]
