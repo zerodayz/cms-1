@@ -224,11 +224,12 @@ impl Mutation {
     /// Groups: Create Group
     pub async fn create_group(
         db: &DbConn,
+        logged_user: i32,
         form_data: groups::Model,
     ) -> Result<groups::ActiveModel, DbErr> {
         groups::ActiveModel {
             group_name: Set(form_data.group_name.to_owned()),
-            owner_id: Set(form_data.owner_id.to_owned()),
+            owner_id: Set(logged_user),
             ..Default::default()
         }
             .save(db)

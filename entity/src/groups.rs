@@ -11,6 +11,7 @@ pub struct Model {
     pub group_id: i32,
     #[sea_orm(unique)]
     pub group_name: String,
+    #[serde(skip_deserializing)]
     pub owner_id: i32,
     #[serde(skip_deserializing)]
     pub created_at: DateTimeUtc,
