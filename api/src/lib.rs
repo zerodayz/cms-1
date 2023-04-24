@@ -1120,6 +1120,12 @@ async fn new_post(
     let mut ctx = tera::Context::new();
     ctx.insert("logged_in_user", &logged_in_user);
 
+    let spaces= QueryCore::find_space_by_owner_id(&state.conn, logged_in_user.user_id)
+        .await
+        .expect("could not find spaces");
+
+    ctx.insert("spaces", &spaces);
+
     let body = state
         .templates
         .render("posts/new.html.tera", &ctx)
@@ -1131,11 +1137,12 @@ async fn new_post(
 async fn create_post(
     state: State<AppState>,
     mut cookies: Cookies,
+    Extension(logged_in_user): Extension<UserModel>,
     form: Form<posts::Model>,
 ) -> Result<PostResponse, (StatusCode, &'static str)> {
     let form = form.0;
 
-    MutationCore::create_post(&state.conn, form)
+    MutationCore::create_post(&state.conn, logged_in_user.user_id, form)
         .await
         .expect("could not insert post");
 

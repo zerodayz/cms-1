@@ -7,28 +7,14 @@
       <textarea name="post_content" id="editor">
       </textarea>
       <div class="w3-padding-16">
-        <label for="space_id">Space ID:</label>
-        <input
-                type="number"
-                placeholder="enter space id"
-                name="space_id"
-                id="space_id"
-                value=""
-                class="u-full-width"
-        />
+        <label for="spaces">Space Name:
+          <select name="space_id" id="spaces" style="padding: 5px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
+            {% for space in spaces %}
+              <option value="{{ space.space_id }}">{{ space.space_name }}</option>
+            {% endfor %}
+          </select>
+        </label>
         <br><small>This is the Space where your Post is saved.</small>
-      </div>
-      <div class="w3-padding-16">
-        <label for="owner_id">Owner ID:</label>
-        <input
-                type="number"
-                placeholder="enter owner id"
-                name="owner_id"
-                id="owner_id"
-                value=""
-                class="u-full-width"
-        />
-        <br><small>Enter the owner ID of the Post.</small>
       </div>
       <div class="w3-padding-16">
         <label for="post_published">Published:</label>

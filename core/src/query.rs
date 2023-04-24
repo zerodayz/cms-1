@@ -116,6 +116,17 @@ impl Query {
     }
 
 
+    /// Spaces: Find Spaces by Owner ID
+    pub async fn find_space_by_owner_id(db: &DbConn, id: i32) -> Result<Vec<spaces::Model>, DbErr> {
+        Space::find()
+            .filter(
+                spaces::Column::OwnerId
+                    .eq(id),
+            )
+            .all(db)
+            .await
+    }
+
     /// Spaces: Find Posts in Space
     pub async fn find_posts_in_space(
         db: &DbConn,

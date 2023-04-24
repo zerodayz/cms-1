@@ -17,6 +17,7 @@ pub struct Model {
     #[serde(default="bool::default")]
     pub post_published: bool,
     pub space_id: i32,
+    #[serde(skip_deserializing)]
     pub owner_id: i32,
     #[serde(skip_deserializing)]
     pub created_at: DateTimeUtc,

@@ -269,6 +269,7 @@ impl Mutation {
     /// Posts: Create Post
     pub async fn create_post(
         db: &DbConn,
+        logged_user: i32,
         form_data: posts::Model,
     ) -> Result<posts::ActiveModel, DbErr> {
         let title = form_data.post_content.split("<h1>").nth(1).unwrap().split("</h1>").nth(0).unwrap();
@@ -279,7 +280,7 @@ impl Mutation {
             post_content: Set(content.to_owned()),
             post_published: Set(form_data.post_published),
             space_id: Set(form_data.space_id),
-            owner_id: Set(form_data.owner_id),
+            owner_id: Set(logged_user),
             ..Default::default()
         }
         .save(db)
