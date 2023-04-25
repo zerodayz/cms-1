@@ -9,6 +9,7 @@ mod m20230330_053048_create_table_groups_spaces;
 mod m20230330_053658_create_table_comments;
 mod m20230330_053719_create_table_posts;
 mod m20230412_044401_create_default_roles;
+mod m20230425_082224_update_posts_mediumtext;
 
 
 pub struct Migrator;
@@ -26,6 +27,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20230330_053658_create_table_comments::Migration),
             Box::new(m20230330_053719_create_table_posts::Migration),
             Box::new(m20230412_044401_create_default_roles::Migration),
+            Box::new(m20230425_082224_update_posts_mediumtext::Migration),
         ]
     }
 }
