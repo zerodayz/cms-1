@@ -43,16 +43,14 @@
 </div>
 <form action="/users/add/group/{{ group.group_id }}" method="post">
   <div class="w3-padding">
-    <label for="user_ids">Members:</label>
-    <input
-            type="text"
-            aria-label="Comma separated values. For example: 1,4"
-            placeholder="enter members 1,4"
-            name="user_ids"
-            id="user_ids"
-            class="u-full-width"
-    />
-    <br><small>Comma separated values.</small>
+    <label for="missing_users">Members:
+      <select name="user_id" id="missing_users" style="padding: 5px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
+        {% for user in missing_users %}
+        <option value="{{ user.user_id }}">{{ user.user_name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <br><small>Add this user to the Group.</small>
     <div class="two columns">
       <input type="submit" class="w3-button" value="add members" />
     </div>

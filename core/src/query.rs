@@ -61,6 +61,30 @@ impl Query {
             .await
     }
 
+    /// User Groups: Get Group Users not in Page
+    pub async fn find_group_users_not_in_group(
+        db: &DbConn,
+        id: i32,
+    ) -> Result<Vec<users::Model>, DbErr> {
+        /// Get all group users
+        let group_users: Vec<groups_users::Model> = UserGroup::find()
+            .filter(groups_users::Column::GroupId.eq(id))
+            .all(db)
+            .await?;
+
+        /// Get all users not in group_users
+        let missing_users = User::find()
+            .filter(
+                users::Column::UserId
+                    .is_not_in(group_users.iter().map(|u| u.user_id)),
+            )
+            .order_by_asc(users::Column::UserId)
+            .all(db)
+            .await?;
+
+        Ok(missing_users)
+    }
+
     /// User Groups: Get Group Users
     pub async fn find_group_users_in_page(
         db: &DbConn,

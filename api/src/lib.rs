@@ -406,21 +406,17 @@ async fn add_user_into_group(
     state: State<AppState>,
     mut cookies: Cookies,
     Path(id): Path<i32>,
-    form: Form<groups_users::MembersForm>,
+    form: Form<groups_users::MemberForm>,
 ) -> Result<PostResponse, (StatusCode, String)> {
     let form = form.0;
     /// Create Vec<i32> from comma separated string
-    let user_ids: Vec<i32> = form
-        .user_ids
-        .split(',')
-        .map(|s| s.parse::<i32>().unwrap())
-        .collect();
+    let user_id = form.user_id.parse().unwrap();
 
-    MutationCore::add_users_into_group(&state.conn, id, user_ids)
+    MutationCore::add_user_into_group(&state.conn, id, user_id)
         .await
         .expect("could not remove users from group");
 
-    let message = format!("Users {} successfully added", form.user_ids);
+    let message = format!("User {} successfully added", user_id);
     let data = Data {
         token: None,
         flash: Option::from(FlashData {
@@ -634,12 +630,17 @@ async fn edit_group(
     let users_per_page = params.items_per_page.unwrap_or(10);
 
 
+    let missing_users = QueryCore::find_group_users_not_in_group(&state.conn, id)
+        .await
+        .expect("Cannot find missing users");
+
     let (users, num_pages) = QueryCore::find_group_users_in_page(&state.conn, id, page, users_per_page)
         .await
         .expect("Cannot find groups in page");
 
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("group", &group);
+    ctx.insert("missing_users", &missing_users);
     ctx.insert("users", &users);
     ctx.insert("page", &page);
     ctx.insert("users_per_page", &users_per_page);

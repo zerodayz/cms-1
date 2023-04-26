@@ -114,19 +114,18 @@ impl Mutation {
     }
 
     /// User Groups: Add Users from Group
-    pub async fn add_users_into_group(
+    pub async fn add_user_into_group(
         db: &DbConn,
         group_id: i32,
-        user_ids: Vec<i32>,
+        user_id: i32,
     ) -> Result<(), DbErr> {
-        for user_id in user_ids {
-            let user = groups_users::ActiveModel {
-                group_id: Set(group_id),
-                user_id: Set(user_id),
-                ..Default::default()
-            };
-            user.insert(db).await?;
-        }
+        let user = groups_users::ActiveModel {
+            group_id: Set(group_id),
+            user_id: Set(user_id),
+            ..Default::default()
+        };
+        user.insert(db).await?;
+
         Ok(())
     }
 
