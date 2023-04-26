@@ -59,16 +59,14 @@
 </div>
 <form action="/groups/add/space/{{ space.space_id }}" method="post">
   <div class="w3-padding">
-    <label for="group_ids">Members:</label>
-    <input
-            type="text"
-            aria-label="Comma separated values. For example: 1,4"
-            placeholder="enter group ids for members 1,4"
-            name="group_ids"
-            id="group_ids"
-            class="u-full-width"
-    />
-    <br><small>Comma separated values.</small>
+    <label for="missing_groups">Groups:
+      <select name="group_id" id="missing_groups" style="padding: 5px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
+        {% for group in missing_groups %}
+          <option value="{{ group.group_id }}">{{ group.group_name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <br><small>Add this group to the Space.</small>
     <div class="two columns">
       <input type="submit" class="w3-button" value="add members" />
     </div>

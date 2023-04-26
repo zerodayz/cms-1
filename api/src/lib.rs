@@ -758,21 +758,16 @@ async fn add_group_into_space(
     state: State<AppState>,
     mut cookies: Cookies,
     Path(id): Path<i32>,
-    form: Form<groups_spaces::MembersForm>,
+    form: Form<groups_spaces::MemberForm>,
 ) -> Result<PostResponse, (StatusCode, String)> {
     let form = form.0;
-    /// Create Vec<i32> from comma separated string
-    let group_ids: Vec<i32> = form
-        .group_ids
-        .split(',')
-        .map(|s| s.parse::<i32>().unwrap())
-        .collect();
+    let group_id = form.group_id.parse().unwrap();
 
-    MutationCore::add_groups_into_space(&state.conn, id, group_ids)
+    MutationCore::add_group_into_space(&state.conn, id, group_id)
         .await
-        .expect("could not remove users from group");
+        .expect("could not add group into space");
 
-    let message = format!("Groups {} successfully added", form.group_ids);
+    let message = format!("Group {} successfully added", group_id);
     let data = Data {
         token: None,
         flash: Option::from(FlashData {
@@ -902,6 +897,10 @@ async fn edit_space(
     let page = params.page.unwrap_or(1);
     let groups_per_page = params.items_per_page.unwrap_or(10);
 
+    let missing_groups = QueryCore::find_groups_not_in_space(&state.conn, id)
+        .await
+        .expect("Cannot find groups not in space");
+
     let (groups, num_pages) = QueryCore::find_space_groups_in_page(&state.conn, id, page, groups_per_page)
         .await
         .expect("Cannot find groups in page");
@@ -909,6 +908,7 @@ async fn edit_space(
     let mut ctx = tera::Context::new();
     ctx.insert("logged_in_user", &logged_in_user);
     ctx.insert("space", &space);
+    ctx.insert("missing_groups", &missing_groups);
     ctx.insert("groups", &groups);
     ctx.insert("page", &page);
     ctx.insert("groups_per_page", &groups_per_page);

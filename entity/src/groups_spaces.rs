@@ -14,6 +14,11 @@ pub struct Model {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+pub struct MemberForm {
+    pub group_id: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct MembersForm {
     pub group_ids: String,
 }

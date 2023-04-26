@@ -187,6 +187,28 @@ impl Query {
         paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
     }
 
+    /// Space Groups: Get Space Groups not in space
+    pub async fn find_groups_not_in_space(
+        db: &DbConn,
+        id: i32,
+    ) -> Result<Vec<groups::Model>, DbErr> {
+        /// Get all space groups
+        let group_spaces: Vec<groups_spaces::Model> = SpaceGroup::find()
+            .filter(groups_spaces::Column::SpaceId.eq(id))
+            .all(db)
+            .await?;
+
+        /// Get all groups that are not in group_spaces
+        let groups: Vec<groups::Model> = Group::find()
+            .filter(
+                groups::Column::GroupId
+                    .is_not_in(group_spaces.iter().map(|u| u.group_id)),
+            )
+            .all(db)
+            .await?;
+        Ok(groups)
+    }
+
     /// Space Groups: Get Space Groups
     pub async fn find_space_groups_in_page(
         db: &DbConn,

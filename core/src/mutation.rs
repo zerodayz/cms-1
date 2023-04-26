@@ -197,10 +197,10 @@ impl Mutation {
     }
 
     /// Space Groups: Add Group into Space
-    pub async fn add_groups_into_space(
+    pub async fn add_group_into_space(
         db: &DbConn,
         space_id: i32,
-        group_ids: Vec<i32>,
+        group_id: i32,
     ) -> Result<(), DbErr> {
         let role: roles::ActiveModel = Role::find()
             .filter(roles::Column::RoleName.eq("viewer"))
@@ -209,15 +209,14 @@ impl Mutation {
             .ok_or(DbErr::Custom("Cannot find role.".to_owned()))
             .map(Into::into)?;
 
-        for group_id in group_ids {
-            let group_spaces = groups_spaces::ActiveModel {
-                group_id: Set(group_id),
-                space_id: Set(space_id),
-                role_id: Set(role.role_id.clone().unwrap()),
-                ..Default::default()
-            };
-            group_spaces.insert(db).await?;
-        }
+        let group_spaces = groups_spaces::ActiveModel {
+            group_id: Set(group_id),
+            space_id: Set(space_id),
+            role_id: Set(role.role_id.clone().unwrap()),
+            ..Default::default()
+        };
+        group_spaces.insert(db).await?;
+
         Ok(())
     }
 
