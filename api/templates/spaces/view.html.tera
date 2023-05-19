@@ -28,7 +28,7 @@
         </a>
         <ul id="subtree" role="group" aria-label="List of {{ posts | length }} Posts">
           {% if posts %}
-            {% for post in posts | slice(end=10) %}
+            {% for post in posts | slice(end=20) %}
             <li role="none">
               <a role="treeitem" href="#{{ post.post_id }}">
                 <span class="label">{{ post.post_title }}</span>
