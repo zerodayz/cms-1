@@ -25,7 +25,7 @@ impl Query {
     ) -> Result<(Vec<users::Model>, u64), DbErr> {
         // Setup paginator
         let paginator = User::find()
-            .order_by_asc(users::Column::UserId)
+            .order_by_desc(users::Column::UserId)
             .paginate(db, users_per_page);
         let num_pages = paginator.num_pages().await?;
 
@@ -78,7 +78,7 @@ impl Query {
                 users::Column::UserId
                     .is_not_in(group_users.iter().map(|u| u.user_id)),
             )
-            .order_by_asc(users::Column::UserId)
+            .order_by_desc(users::Column::UserId)
             .all(db)
             .await?;
 
@@ -104,7 +104,7 @@ impl Query {
                 users::Column::UserId
                     .is_in(group_users.iter().map(|u| u.user_id)),
             )
-            .order_by_asc(users::Column::UserId)
+            .order_by_desc(users::Column::UserId)
             .paginate(db, users_per_page);
         let num_pages = paginator.num_pages().await?;
 
@@ -125,7 +125,7 @@ impl Query {
     ) -> Result<(Vec<groups::Model>, u64), DbErr> {
         // Setup paginator
         let paginator = Group::find()
-            .order_by_asc(groups::Column::GroupId)
+            .order_by_desc(groups::Column::GroupId)
             .paginate(db, groups_per_page);
         let num_pages = paginator.num_pages().await?;
 
@@ -167,7 +167,7 @@ impl Query {
                         .eq(true),
                 )
             )
-            .order_by_asc(posts::Column::PostId)
+            .order_by_desc(posts::Column::PostId)
             .paginate(db, posts_per_page);
         let num_pages = paginator.num_pages().await?;
 
@@ -183,7 +183,7 @@ impl Query {
     ) -> Result<(Vec<spaces::Model>, u64), DbErr> {
         // Setup paginator
         let paginator = Space::find()
-            .order_by_asc(spaces::Column::SpaceId)
+            .order_by_desc(spaces::Column::SpaceId)
             .paginate(db, spaces_per_page);
         let num_pages = paginator.num_pages().await?;
 
@@ -203,7 +203,7 @@ impl Query {
             .filter(
                 spaces::Column::OwnerId
                     .eq(user_id))
-            .order_by_asc(spaces::Column::SpaceId)
+            .order_by_desc(spaces::Column::SpaceId)
             .paginate(db, spaces_per_page);
         let num_pages = paginator.num_pages().await?;
 
@@ -252,7 +252,7 @@ impl Query {
                 groups::Column::GroupId
                     .is_in(group_spaces.iter().map(|u| u.group_id)),
             )
-            .order_by_asc(groups::Column::GroupId)
+            .order_by_desc(groups::Column::GroupId)
             .paginate(db, groups_per_page);
         let num_pages = paginator.num_pages().await?;
 
@@ -278,7 +278,7 @@ impl Query {
                 groups::Column::GroupId
                     .is_in(group_spaces.iter().map(|u| u.group_id)),
             )
-            .order_by_asc(groups::Column::GroupId)
+            .order_by_desc(groups::Column::GroupId)
             .all(db)
             .await?;
 
@@ -308,7 +308,7 @@ impl Query {
     ) -> Result<(Vec<posts::Model>, u64), DbErr> {
         // Setup paginator
         let paginator = Post::find()
-            .order_by_asc(posts::Column::PostId)
+            .order_by_desc(posts::Column::PostId)
             .paginate(db, posts_per_page);
         let num_pages = paginator.num_pages().await?;
 
@@ -328,7 +328,7 @@ impl Query {
             .filter(
                 posts::Column::OwnerId
                     .eq(user_id))
-            .order_by_asc(posts::Column::PostId)
+            .order_by_desc(posts::Column::PostId)
             .paginate(db, posts_per_page);
         let num_pages = paginator.num_pages().await?;
 
