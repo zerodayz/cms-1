@@ -29,12 +29,21 @@
         <ul id="subtree" role="group" aria-label="List of {{ posts | length }} Posts">
           {% if posts %}
             {% for post in posts | slice(end=20) %}
-            <li role="none">
-              <a role="treeitem" href="#{{ post.post_id }}">
-                <span class="label">{{ post.post_title }}</span>
-                <br><small>Last updated at {{ post.updated_at | format_date }} by {{ post.owner_id }}</small>
-              </a>
-            </li>
+              {% if loop.first %}
+                <li role="none">
+                  <a role="treeitem" tabindex="0" aria-current="page" href="#{{ post.post_id }}">
+                    <span class="label">{{ post.post_title }}</span>
+                    <br><small>Last updated at {{ post.updated_at | format_date }} by {{ post.owner_id }}</small>
+                  </a>
+                </li>
+              {% else %}
+                <li role="none">
+                  <a role="treeitem" href="#{{ post.post_id }}">
+                    <span class="label">{{ post.post_title }}</span>
+                    <br><small>Last updated at {{ post.updated_at | format_date }} by {{ post.owner_id }}</small>
+                  </a>
+                </li>
+              {% endif %}
             {% endfor %}
           {% endif %}
             <li role="none">
@@ -123,8 +132,16 @@
         </li>
       </ul>
       <div class="post-content ck-content" aria-label="Post Content">
-        <h2 style="text-align: center"></h2>
-        <p id="post-paragraph"></p>
+        {% if posts %}
+          {% set last_post = posts | first %}
+          <h2 style="text-align: center">{{ last_post.post_title }}</h2>
+          <div id="post-paragraph">
+            <p class="time">Last updated {{ last_post.updated_at | format_date }} by {{ last_post.owner_id }}</p>
+            <div class="ck-content">
+              {{ last_post.post_content | safe }}
+            </div>
+          </div>
+        {% endif %}
       </div>
     </div>
   </section>
