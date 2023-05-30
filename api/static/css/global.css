@@ -4,7 +4,6 @@ body,h1,h2,h3,h4,h5 {
 }
 
 body {
-    background-color: var(--cms-bg-color);
     color: var(--cms-text-color);
 }
 
