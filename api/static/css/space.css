@@ -12,7 +12,6 @@
     padding: 6px;
     width: 17em;
     height: calc(100vh - 118px);
-    border-right: var(--cms-border-color) 1px solid;
 }
 
 .space .page {
