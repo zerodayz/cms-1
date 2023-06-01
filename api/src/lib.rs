@@ -1195,11 +1195,36 @@ async fn view_post(
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
     let mut ctx = tera::Context::new();
 
-    let post: posts::Model = QueryCore::find_post_by_id(&state.conn, id)
+    let post: Option<posts::Model> = QueryCore::find_post_by_id(&state.conn, id)
         .await
-        .expect("could not find post")
-        .unwrap_or_else(|| panic!("could not find post with id {id}"));
+        .expect("could not find post");
 
+    if post == None {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to view the page.".to_string(),
+            }),
+        };
+
+        add_cookies(&mut cookies, data);
+
+        ctx.insert("logged_in_user", &logged_in_user);
+
+        if let Some(value) = get_flash_cookie(&cookies) {
+            ctx.insert("flash", &value);
+        }
+
+        let body = state
+            .templates
+            .render("posts/view.html.tera", &ctx)
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+        return Ok(Html(body))
+    }
+
+    let post = post.unwrap();
     let space_id = post.space_id;
     let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, post.space_id)
         .await
