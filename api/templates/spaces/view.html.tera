@@ -23,41 +23,47 @@
                         <polygon points="2 1, 12 1, 7 9"></polygon>
                       </svg>
                     </span>
-                    List of {{ posts | length }} Posts
+                    {% if posts %}
+                      List of {{ posts | length }} Posts
+                    {% else %}
+                      No Posts
+                    {% endif %}
                   </span>
         </a>
-        <ul id="subtree" role="group" aria-label="List of {{ posts | length }} Posts">
-          {% if posts %}
+        {% if posts %}
+          <ul id="subtree" role="group" aria-label="List of {{ posts | length }} Posts">
             {% for post in posts | slice(end=20) %}
               {% if loop.first %}
-                <li role="none">
-                  <a role="treeitem" tabindex="0" aria-current="page" href="#{{ post.post_id }}">
-                    <span class="label">{{ post.post_title }}</span>
-                    <br><small>Last updated at {{ post.updated_at | format_date }} by {{ post.owner_id }}</small>
-                  </a>
-                </li>
+              <li role="none">
+                <a role="treeitem" tabindex="0" aria-current="page" href="#{{ post.post_id }}">
+                  <span class="label">{{ post.post_title }}</span>
+                  <br><small>Last updated at {{ post.updated_at | format_date }} by {{ post.owner_id }}</small>
+                </a>
+              </li>
               {% else %}
-                <li role="none">
-                  <a role="treeitem" href="#{{ post.post_id }}">
-                    <span class="label">{{ post.post_title }}</span>
-                    <br><small>Last updated at {{ post.updated_at | format_date }} by {{ post.owner_id }}</small>
-                  </a>
-                </li>
+              <li role="none">
+                <a role="treeitem" href="#{{ post.post_id }}">
+                  <span class="label">{{ post.post_title }}</span>
+                  <br><small>Last updated at {{ post.updated_at | format_date }} by {{ post.owner_id }}</small>
+                </a>
+              </li>
               {% endif %}
             {% endfor %}
-          {% endif %}
-            <li role="none">
-              {% if page != 1 %}
-              <a role="treeitem" href="/spaces/{{ space.space_id }}/view?page={{ page - 1 }}&posts_per_page={{ posts_per_page }}"
-              >Previous Page</a
-              >
-              {% endif %} {% if page != num_pages %}
-              <a role="treeitem" href="/spaces/{{ space.space_id }}/view?page={{ page + 1 }}&posts_per_page={{ posts_per_page }}"
-              >Next Page</a
-              >
-              {% endif %}
-            </li>
-        </ul>
+            {% if space %}
+              <li role="none">
+                {% if page != 1 %}
+                <a role="treeitem" href="/spaces/{{ space.space_id }}/view?page={{ page - 1 }}&posts_per_page={{ posts_per_page }}"
+                >Previous Page</a
+                >
+                {% endif %} {% if page != num_pages %}
+                <a role="treeitem" href="/spaces/{{ space.space_id }}/view?page={{ page + 1 }}&posts_per_page={{ posts_per_page }}"
+                >Next Page</a
+                >
+                {% endif %}
+              </li>
+            {% endif %}
+          </ul>
+        {% endif %}
       </li>
     </ul>
   </nav>
@@ -133,14 +139,14 @@
       </ul>
       <div class="post-content ck-content" aria-label="Post Content">
         {% if posts %}
-          {% set last_post = posts | first %}
-          <h2 style="text-align: center">{{ last_post.post_title }}</h2>
-          <div id="post-paragraph">
-            <p class="time">Last updated {{ last_post.updated_at | format_date }} by {{ last_post.owner_id }}</p>
-            <div class="ck-content">
-              {{ last_post.post_content | safe }}
-            </div>
+        {% set last_post = posts | first %}
+        <h2 style="text-align: center">{{ last_post.post_title }}</h2>
+        <div id="post-paragraph">
+          <p class="time">Last updated {{ last_post.updated_at | format_date }} by {{ last_post.owner_id }}</p>
+          <div class="ck-content">
+            {{ last_post.post_content | safe }}
           </div>
+        </div>
         {% endif %}
       </div>
     </div>

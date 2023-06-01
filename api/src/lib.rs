@@ -937,14 +937,40 @@ async fn view_space(
 ) -> Result<Html<String>, (StatusCode, &'static str)> {
     let mut ctx = tera::Context::new();
 
-    let space: spaces::Model = QueryCore::find_space_by_id(&state.conn, id)
+    let space: Option<spaces::Model> = QueryCore::find_space_by_id(&state.conn, id)
         .await
-        .expect("could not find space")
-        .unwrap_or_else(|| panic!("could not find space with id {id}"));
+        .expect("could not find space");
 
     let users: Vec<i32> = QueryCore::find_users_by_space_id(&state.conn, id)
         .await
         .expect("Cannot find user in space groups");
+
+    // If space is None, it means that the space does not exist
+    if space == None {
+        let data = Data {
+            token: None,
+            flash: Option::from(FlashData {
+                kind: "Error".to_string(),
+                message: "You are not allowed to view the page.".to_string(),
+            }),
+        };
+
+        add_cookies(&mut cookies, data);
+
+        ctx.insert("logged_in_user", &logged_in_user);
+
+        if let Some(value) = get_flash_cookie(&cookies) {
+            ctx.insert("flash", &value);
+        }
+        let body = state
+            .templates
+            .render("spaces/view.html.tera", &ctx)
+            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+        return Ok(Html(body))
+    }
+
+    let space = space.unwrap();
 
     if !space.is_public && space.owner_id != Some(logged_in_user.user_id) && !users.contains(&logged_in_user.user_id) {
         let data = Data {
