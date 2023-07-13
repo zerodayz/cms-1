@@ -39,7 +39,6 @@
 </main>
 <!-- END GRID -->
 </div>
-<div id="arrow-keys-indicator" class="hidden"></div>
 <!-- END w3-content -->
 </div>
 {% block scripts %}

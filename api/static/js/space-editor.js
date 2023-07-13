@@ -712,7 +712,7 @@ window.addEventListener('load', function () {
 class StyleManager {
     constructor(node) {
         this.node = node;
-        this.fontSize = 'medium';
+        this.fontSize = '15px';
     }
 
     setFontFamily(value) {
@@ -758,12 +758,12 @@ class StyleManager {
                 this.setFontSize('x-small');
                 break;
 
-            case 'medium':
+            case '15px':
                 this.setFontSize('small');
                 break;
 
             case 'large':
-                this.setFontSize('medium');
+                this.setFontSize('15px');
                 break;
 
             case 'x-large':
@@ -782,10 +782,10 @@ class StyleManager {
                 break;
 
             case 'small':
-                this.setFontSize('medium');
+                this.setFontSize('15px');
                 break;
 
-            case 'medium':
+            case '15px':
                 this.setFontSize('large');
                 break;
 

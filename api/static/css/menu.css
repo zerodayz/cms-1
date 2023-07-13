@@ -190,24 +190,8 @@
     display: none !important;
 }
 
-/* Grid Nuxt */
-
-#arrow-keys-indicator {
-    bottom: 10px;
-    left: 0;
-    margin-left: 10px;
-    position: fixed;
-    height: 65px;
-    width: 85px;
-    background: url("/static/images/black_keys.png") no-repeat;
-    background-size: contain;
-}
 
 @media screen and (max-width: 1000px) {
-    #arrow-keys-indicator {
-        display: none;
-    }
-
     .indicator_description {
         display: none;
     }

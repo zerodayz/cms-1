@@ -343,13 +343,9 @@ class TreeViewNavigation {
 
     onBodyFocusin(event) {
         var tgt = event.target;
-        this.keysIndicator = document.getElementById('arrow-keys-indicator');
 
         if (this.treeNode.contains(tgt)) {
             this.navNode.classList.add('focus');
-            if (this.keysIndicator && this.keysIndicator.classList.contains('hidden')) {
-                aria.Utils.removeClass(this.keysIndicator, 'hidden');
-            }
         } else {
             this.navNode.classList.remove('focus');
             this.updateAriaCurrent();

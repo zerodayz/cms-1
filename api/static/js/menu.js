@@ -559,20 +559,11 @@ class MenubarNavigation {
     onMenubarFocusin() {
         // if the menubar or any of its menus has focus, add styling hook for hover
         this.domNode.classList.add('focus');
-        // show arrow keys indicator
-        this.keysIndicator = document.getElementById('arrow-keys-indicator');
-        if (this.keysIndicator && this.keysIndicator.classList.contains('hidden')) {
-            aria.Utils.removeClass(this.keysIndicator, 'hidden');
-        }
     }
 
     onMenubarFocusout() {
         // remove styling hook for hover on menubar item
         this.domNode.classList.remove('focus');
-        // hide arrow keys indicator
-        if (this.keysIndicator && !this.keysIndicator.classList.contains('hidden')) {
-            aria.Utils.addClass(this.keysIndicator, 'hidden');
-        }
     }
 
     onKeydownSwitch(event) {
@@ -905,20 +896,6 @@ window.addEventListener('load', function () {
     // Set focus to main unless we come from initial home page
     let h1Node = document.getElementById('page-title');
     if (h1Node) {
-        h1Node.addEventListener('focusin', function () {
-            // show arrow keys indicator
-            this.keysIndicator = document.getElementById('arrow-keys-indicator');
-            if (this.keysIndicator && this.keysIndicator.classList.contains('hidden')) {
-                aria.Utils.removeClass(this.keysIndicator, 'hidden');
-            }
-        });
-        h1Node.addEventListener('focusout', function () {
-            // hide arrow keys indicator
-            this.keysIndicator = document.getElementById('arrow-keys-indicator');
-            if (this.keysIndicator && !this.keysIndicator.classList.contains('hidden')) {
-                aria.Utils.addClass(this.keysIndicator, 'hidden');
-            }
-        });
         h1Node.focus();
     }
 
