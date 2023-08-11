@@ -497,4 +497,19 @@ window.addEventListener('load', function () {
     for (let i = 0; i < trees.length; i++) {
         new TreeViewNavigation(trees[i]);
     }
+
+
+    const grid = document.querySelector('.space');
+    const border = document.getElementById('border');
+    let isBorderHidden = false;
+
+    border.addEventListener('click', () => {
+        if (isBorderHidden) {
+            grid.style.gridTemplateColumns = '17em 10px auto';
+        } else {
+            grid.style.gridTemplateColumns = '0 10px 1fr';
+        }
+
+        isBorderHidden = !isBorderHidden;
+    });
 });

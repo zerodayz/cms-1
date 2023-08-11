@@ -67,6 +67,7 @@
       </li>
     </ul>
   </nav>
+  <div class="border" id="border"></div>
   <section class="main" aria-labelledby="id_page_title">
     <div class="menubar-editor">
       <ul role="menubar" aria-label="Text Formatting">

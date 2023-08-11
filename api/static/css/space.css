@@ -4,7 +4,7 @@
 
 .space {
     display: grid;
-    grid-template-columns: 17em auto;
+    grid-template-columns: 17em 10px auto;
 }
 
 .space nav {
@@ -124,4 +124,13 @@ a[role="treeitem"][aria-expanded="false"]
 
 .treeview-navigation a[role="treeitem"] span.icon svg polygon:hover {
     stroke: currentcolor;
+}
+
+.border {
+    width: 10px;
+    background-color: #ccc;
+    cursor: pointer;
+    top: 0;
+    right: 0;
+    height: 100%;
 }
