@@ -11,7 +11,7 @@
     margin: 0;
     padding: 6px;
     width: 17em;
-    height: calc(100vh - 118px);
+    height: auto;
 }
 
 .space .page {
